@@ -1,16 +1,37 @@
-# React + Vite
+# HD Wallet (Ethereum + Solana)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-blue)](https://hd-wallet-yoet.vercel.app/)
 
-Currently, two official plugins are available:
+A simple and secure **HD (Hierarchical Deterministic) Wallet** built with **React, TailwindCSS, Solana Web3.js, and Ethers.js**.  
+It allows you to generate and manage **Ethereum** and **Solana** wallets from a single mnemonic seed phrase, with support for multiple accounts.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🚀 Features
+- 🔑 **Generate new HD Wallets** with a secure BIP39 mnemonic.  
+- 🌐 **Cross-chain support** – Ethereum & Solana accounts from the same seed.  
+- ➕ **Create multiple accounts** under the same wallet.  
+- 👀 **Toggle private key visibility** for ETH & SOL accounts.  
+- 💾 **Persistent storage** using `localStorage` (wallets remain after reload).  
+- 🗑️ **Delete individual accounts** or reset the whole wallet.  
+- 🎨 Clean UI with **TailwindCSS**.
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🛠️ Tech Stack
+- **React** (Frontend)
+- **TailwindCSS** (Styling)
+- **Ethers.js** (Ethereum wallet generation)
+- **Solana Web3.js** + **TweetNaCl** (Solana keypairs)
+- **ed25519-hd-key** (Derivation paths)
+- **BIP39** (Mnemonic generation)
+
+---
+
+## 📦 Installation & Setup
+
+Clone the repo:
+```bash
+git clone https://github.com/your-username/hd-wallet.git
+cd hd-wallet
