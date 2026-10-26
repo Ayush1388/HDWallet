@@ -1,6 +1,47 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-body {
-   @apply bg-black text-white m-0
+
+@layer base {
+  html { color-scheme: dark; -webkit-tap-highlight-color: transparent; }
+  body {
+    @apply m-0 min-h-[100dvh] bg-ink font-sans text-zinc-50 antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  ::selection { background: rgba(60,242,122,.3); }
+  :focus-visible { @apply outline-none ring-2 ring-accent/70 ring-offset-2 ring-offset-ink; }
+  button, a, [role="button"] { cursor: pointer; }
+}
+
+@layer components {
+  .glass { @apply border border-white/[.06] bg-panel shadow-glass; }
+  .card { @apply glass rounded-3xl; }
+  .pill {
+    @apply glass inline-flex items-center gap-2.5 rounded-full transition hover:border-accent/30 active:scale-[.97];
+  }
+  .icon-btn {
+    @apply grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/10 bg-white/[.03] text-zinc-200 transition
+      hover:border-accent/40 hover:text-white active:scale-95;
+  }
+  .input {
+    @apply w-full rounded-2xl border border-line bg-black/60 px-4 py-3 text-[15px] text-zinc-50
+      placeholder:text-muted/60 transition focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/20;
+  }
+  .label { @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted; }
+  .chip {
+    @apply inline-flex min-h-[34px] items-center rounded-full border px-3.5 text-xs font-semibold transition;
+  }
+  .chip-on { @apply border-accent/60 bg-accent/10 text-accent; }
+  .chip-off { @apply border-white/[.08] bg-white/[.03] text-muted hover:text-zinc-100; }
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .skeleton {
+    @apply rounded-lg bg-[length:200%_100%] animate-shimmer;
+    background-image: linear-gradient(90deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,.09) 50%, rgba(255,255,255,.04) 100%);
+  }
+  .tabular { font-variant-numeric: tabular-nums; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }

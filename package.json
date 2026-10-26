@@ -1,19 +1,24 @@
 {
-  "name": "vite-project",
+  "name": "aurora-wallet",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run build:ext && vite build",
+    "build:ext": "vite build --mode extension && node scripts/zip-extension.mjs",
+    "icons": "node scripts/make-icons.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@solana/spl-token": "^0.4.15",
     "@solana/web3.js": "^1.98.4",
     "bip39": "^3.1.0",
     "ed25519-hd-key": "^1.3.0",
     "ethers": "^6.15.0",
+    "lightweight-charts": "^5.2.1",
+    "qrcode.react": "^4.2.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "tweetnacl": "^1.0.3"
@@ -23,6 +28,7 @@
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.3",
+    "adm-zip": "^0.5.16",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",
