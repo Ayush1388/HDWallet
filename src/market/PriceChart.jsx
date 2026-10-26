@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { AreaSeries, CandlestickSeries, ColorType, CrosshairMode, HistogramSeries, createChart } from "lightweight-charts";
 import { getKlines, subscribe } from "../lib/market";
 
-const UP = "#2ee07c";
-const DOWN = "#f6465d";
+const UP = "#3FCB7E";
+const DOWN = "#F0524A";
 
 const precisionFor = (p) => (p >= 1000 ? 2 : p >= 1 ? 4 : p >= 0.01 ? 6 : 8);
 
@@ -20,20 +20,20 @@ export function PriceChart({ pair, interval = "1h", type = "candles", height = 4
       autoSize: true,
       layout: {
         background: { type: ColorType.Solid, color: "transparent" },
-        textColor: "#8d9099",
-        fontFamily: "Inter, system-ui, sans-serif",
+        textColor: "#8A7F75",
+        fontFamily: "JetBrains Mono, ui-monospace, monospace",
         fontSize: compact ? 10 : 11,
       },
       grid: {
-        vertLines: { color: "rgba(255,255,255,.035)" },
-        horzLines: { color: "rgba(255,255,255,.035)" },
+        vertLines: { color: "rgba(255,236,220,.04)" },
+        horzLines: { color: "rgba(255,236,220,.04)" },
       },
-      rightPriceScale: { borderColor: "rgba(255,255,255,.08)" },
-      timeScale: { borderColor: "rgba(255,255,255,.08)", timeVisible: interval !== "1d" && interval !== "1w", secondsVisible: false, rightOffset: 4 },
+      rightPriceScale: { borderColor: "rgba(255,236,220,.08)" },
+      timeScale: { borderColor: "rgba(255,236,220,.08)", timeVisible: interval !== "1d" && interval !== "1w", secondsVisible: false, rightOffset: 4 },
       crosshair: {
         mode: CrosshairMode.Normal,
-        vertLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#283349" },
-        horzLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#283349" },
+        vertLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#2A2320" },
+        horzLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#2A2320" },
       },
       handleScroll: !compact || { horzTouchDrag: true, vertTouchDrag: false },
     });
@@ -41,14 +41,14 @@ export function PriceChart({ pair, interval = "1h", type = "candles", height = 4
     const main =
       type === "candles"
         ? chart.addSeries(CandlestickSeries, { upColor: UP, downColor: DOWN, borderVisible: false, wickUpColor: UP, wickDownColor: DOWN })
-        : chart.addSeries(AreaSeries, { lineColor: "#F59E0B", topColor: "rgba(245,158,11,.28)", bottomColor: "rgba(245,158,11,0)", lineWidth: 2 });
+        : chart.addSeries(AreaSeries, { lineColor: "#FF8A3D", topColor: "rgba(255,138,61,.22)", bottomColor: "rgba(229,53,43,0)", lineWidth: 2 });
     main.priceScale().applyOptions({ scaleMargins: { top: 0.08, bottom: 0.24 } });
 
     const vol = chart.addSeries(HistogramSeries, { priceFormat: { type: "volume" }, priceScaleId: "vol", lastValueVisible: false, priceLineVisible: false });
     chart.priceScale("vol").applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
 
     const toMain = (c) => (type === "candles" ? c : { time: c.time, value: c.close });
-    const toVol = (c) => ({ time: c.time, value: c.volume, color: c.close >= c.open ? "rgba(46,224,124,.35)" : "rgba(246,70,93,.35)" });
+    const toVol = (c) => ({ time: c.time, value: c.volume, color: c.close >= c.open ? "rgba(63,203,126,.32)" : "rgba(240,82,74,.32)" });
 
     let unsub = () => {};
     let dead = false;

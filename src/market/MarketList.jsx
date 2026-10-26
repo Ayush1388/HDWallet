@@ -26,22 +26,22 @@ export function MarketList({ onOpen, limit }) {
     <div>
       <MarketTabs tab={tab} setTab={setTab} className="mb-3" />
       {loading ? (
-        <div className="space-y-2">{[0, 1, 2, 3].map((i) => <div key={i} className="skeleton h-[60px] rounded-2xl" />)}</div>
+        <div className="space-y-2">{[0, 1, 2, 3].map((i) => <div key={i} className="skeleton h-[66px] rounded-[20px]" />)}</div>
       ) : error && !rows.length ? (
         <p className="py-8 text-center text-sm text-muted">Market data is unavailable right now.</p>
       ) : (
         <ul className="space-y-2">
           {rows.map((t) => (
             <li key={t.pair}>
-              <button onClick={() => onOpen(t.symbol)} className="flex w-full items-center gap-3 rounded-2xl border border-white/[.05] bg-white/[.025] px-3 py-2.5 text-left transition hover:border-white/15">
+              <button onClick={() => onOpen(t.symbol)} className="flex w-full items-center gap-3 rounded-[20px] border border-[rgba(255,236,220,.05)] bg-raised/60 px-3 py-3 text-left transition hover:border-[rgba(255,236,220,.14)]">
                 <CoinIcon symbol={t.symbol} />
                 <span className="min-w-0 flex-1">
-                  <span className="block font-bold">{t.symbol}</span>
-                  <Pct value={t.change} className="text-xs font-semibold" />
+                  <span className="block font-semibold uppercase tracking-wide">{t.symbol}</span>
+                  <Pct value={t.change} className="text-[11px]" />
                 </span>
                 <span className="text-right">
-                  <span className="block font-bold tabular">{fmtPrice(t.price)}</span>
-                  <span className="block text-xs text-muted tabular">Vol {fmtCompact(t.quoteVolume)}</span>
+                  <span className="block font-medium tabular">{fmtPrice(t.price)}</span>
+                  <span className="block font-mono text-[10px] uppercase text-muted tabular">Vol {fmtCompact(t.quoteVolume)}</span>
                 </span>
               </button>
             </li>
@@ -84,7 +84,7 @@ export function MarketTable({ onOpen, limit, search = "" }) {
                   <tr key={i}><td colSpan={6} className="px-4 py-2"><div className="skeleton h-10" /></td></tr>
                 ))
               : rows.map((t) => (
-                  <tr key={t.pair} onClick={() => onOpen(t.symbol)} className="cursor-pointer border-t border-white/[.04] transition hover:bg-white/[.03]">
+                  <tr key={t.pair} onClick={() => onOpen(t.symbol)} className="cursor-pointer border-t border-white/[.04] transition hover:bg-raised/60">
                     <td className="px-4 py-3">
                       <a href={`#/coin/${t.symbol}`} onClick={(e) => e.stopPropagation()} className="flex items-center gap-3">
                         <CoinIcon symbol={t.symbol} size="h-8 w-8" />

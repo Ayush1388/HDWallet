@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { coinIcon, fmtPrice, fmtQty, getDepth, subscribe } from "../lib/market";
 
 export function CoinIcon({ symbol, size = "h-9 w-9" }) {
   const [failed, setFailed] = useState(false);
   if (failed) {
     return (
-      <span className={`${size} grid shrink-0 place-items-center rounded-full bg-gradient-to-br from-slate-600 to-slate-800 text-[10px] font-extrabold text-zinc-100 ring-1 ring-white/10`} aria-hidden="true">
+      <span className={`${size} grid shrink-0 place-items-center rounded-full bg-gradient-to-br from-raised to-panel text-[10px] font-extrabold text-cream ring-1 ring-white/10`} aria-hidden="true">
         {symbol.slice(0, 3)}
       </span>
     );
@@ -15,7 +15,7 @@ export function CoinIcon({ symbol, size = "h-9 w-9" }) {
 
 export function Pct({ value, className = "" }) {
   if (value == null || !isFinite(value)) return <span className={`text-muted ${className}`}>—</span>;
-  return <span className={`tabular ${value >= 0 ? "text-up" : "text-down"} ${className}`}>{value >= 0 ? "+" : ""}{value.toFixed(2)}%</span>;
+  return <span className={`font-mono tabular ${value >= 0 ? "text-up" : "text-down"} ${className}`}>{value >= 0 ? "+" : ""}{value.toFixed(2)}%</span>;
 }
 
 /** Tiny SVG sparkline; colour follows first→last direction. */
@@ -26,10 +26,47 @@ export function Spark({ points, className = "h-10 w-28", stroke }) {
   const w = 100;
   const h = 32;
   const d = points.map((p, i) => `${i ? "L" : "M"}${((i / (points.length - 1)) * w).toFixed(2)},${(h - ((p - min) / (max - min || 1)) * (h - 4) - 2).toFixed(2)}`).join("");
-  const color = stroke ?? (points.at(-1) >= points[0] ? "#2ee07c" : "#f6465d");
+  const color = stroke ?? (points.at(-1) >= points[0] ? "#3FCB7E" : "#F0524A");
   return (
     <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className={className} aria-hidden="true">
       <path d={d} fill="none" stroke={color} strokeWidth="1.6" vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/**
+ * The reference's signature chart: a smooth line stroked with the ember gradient,
+ * ending in a glowing gold dot. Used for portfolio and hero previews.
+ */
+export function GlowLine({ points, className = "h-24 w-full" }) {
+  const id = useId();
+  if (!points?.length) return <span className={`${className} skeleton block`} />;
+  const w = 300;
+  const h = 100;
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const xy = points.map((p, i) => [(i / (points.length - 1)) * (w - 12) + 4, h - 10 - ((p - min) / (max - min || 1)) * (h - 22)]);
+  // Catmull-Rom -> cubic Bezier for a soft curve.
+  let d = `M${xy[0][0]},${xy[0][1]}`;
+  for (let i = 0; i < xy.length - 1; i++) {
+    const [p0, p1, p2, p3] = [xy[i - 1] ?? xy[i], xy[i], xy[i + 1], xy[i + 2] ?? xy[i + 1]];
+    d += ` C${p1[0] + (p2[0] - p0[0]) / 6},${p1[1] + (p2[1] - p0[1]) / 6} ${p2[0] - (p3[0] - p1[0]) / 6},${p2[1] - (p3[1] - p1[1]) / 6} ${p2[0]},${p2[1]}`;
+  }
+  const [ex, ey] = xy.at(-1);
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className={`${className} overflow-visible`} aria-hidden="true">
+      <defs>
+        <linearGradient id={`${id}s`} x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor="#E5352B" />
+          <stop offset=".55" stopColor="#FF8A3D" />
+          <stop offset="1" stopColor="#FCCE54" />
+        </linearGradient>
+        <filter id={`${id}g`} x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="3" /></filter>
+      </defs>
+      <path d={d} fill="none" stroke={`url(#${id}s)`} strokeWidth="6" opacity=".35" filter={`url(#${id}g)`} vectorEffect="non-scaling-stroke" />
+      <path d={d} fill="none" stroke={`url(#${id}s)`} strokeWidth="2.2" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+      <circle cx={ex} cy={ey} r="7" fill="#FCCE54" opacity=".35" filter={`url(#${id}g)`} />
+      <circle cx={ex} cy={ey} r="3.2" fill="#FCCE54" />
     </svg>
   );
 }
@@ -77,7 +114,7 @@ export function OrderBook({ pair, rows = 10, lastPrice, change }) {
     <div className="relative grid grid-cols-3 gap-2 px-2 py-[3px] text-xs tabular">
       <span className={`absolute inset-y-0 right-0 ${side === "ask" ? "bg-down/10" : "bg-up/10"}`} style={{ width: `${(total / max) * 100}%` }} />
       <span className={`relative ${side === "ask" ? "text-down" : "text-up"}`}>{fmtPrice(l.price)}</span>
-      <span className="relative text-right text-zinc-300">{fmtQty(l.qty)}</span>
+      <span className="relative text-right text-cream/75">{fmtQty(l.qty)}</span>
       <span className="relative text-right text-muted">{fmtQty(total)}</span>
     </div>
   );
@@ -118,7 +155,7 @@ export function RecentTrades({ pair, rows = 18 }) {
         trades.map((t) => (
           <div key={t.id} className="grid grid-cols-3 gap-2 px-2 py-[3px] text-xs tabular">
             <span className={t.sell ? "text-down" : "text-up"}>{fmtPrice(t.price)}</span>
-            <span className="text-right text-zinc-300">{fmtQty(t.qty)}</span>
+            <span className="text-right text-cream/75">{fmtQty(t.qty)}</span>
             <span className="text-right text-muted">{new Date(t.time).toLocaleTimeString("en-US", { hour12: false })}</span>
           </div>
         ))

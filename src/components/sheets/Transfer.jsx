@@ -159,7 +159,7 @@ export function SendSheet({ account, rows, network, initialAssetId, initialTo = 
 
       {step === "done" && (
         <div className="text-center">
-          <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-accent/15 text-accent"><Icon name="check" className="h-8 w-8" strokeWidth={2.2} /></span>
+          <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-up/10 text-up"><Icon name="check" className="h-8 w-8" strokeWidth={2.2} /></span>
           <h3 className="mt-4 text-xl font-bold">{amount} {asset.symbol} on its way</h3>
           <p className="mx-auto mt-1 max-w-xs break-all font-mono text-xs text-muted">{result.hash}</p>
           <a href={txUrl(asset.chain, result.hash, network)} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline">
@@ -181,7 +181,7 @@ export function ReceiveSheet({ account, network, initialChain = "eth", onClose }
     <Modal title="Receive" onClose={onClose}>
       <Segmented label="Chain" value={chain} onChange={setChain} className="mb-5 flex w-full" options={[{ value: "eth", label: network.eth.name }, { value: "sol", label: network.sol.name }]} />
       <div className="flex flex-col items-center">
-        <div className="rounded-[28px] bg-white p-4 shadow-xl shadow-accent/10">
+        <div className="rounded-[28px] bg-white p-4 shadow-xl">
           <QRCodeSVG value={address} size={188} level="M" fgColor="#0A0F1C" />
         </div>
         <p className="mt-4 text-sm font-semibold">{account.name}</p>
@@ -189,7 +189,7 @@ export function ReceiveSheet({ account, network, initialChain = "eth", onClose }
         <div className="mt-3 flex gap-2">
           <CopyButton value={address} label="Copy address" />
           {typeof navigator !== "undefined" && navigator.share && (
-            <button onClick={share} className="inline-flex min-h-[36px] items-center gap-1.5 rounded-xl px-2.5 text-xs font-semibold text-muted hover:bg-white/5 hover:text-slate-50">
+            <button onClick={share} className="inline-flex min-h-[36px] items-center gap-1.5 rounded-xl px-2.5 text-xs font-semibold text-muted hover:bg-white/5 hover:text-cream">
               <Icon name="external" className="h-3.5 w-3.5" /> Share
             </button>
           )}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { coinIcon } from "../lib/market";
 
 const paths = {
@@ -38,11 +38,28 @@ const paths = {
   swap: "M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7",
   search: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4",
   chart: "M3 3v18h18M7 15l4-4 3 3 5-6",
+  hex: "M12 3l7.5 4.25v9.5L12 21l-7.5-4.25v-9.5z",
+  flame: "M12 21c-3.9 0-6.5-2.6-6.5-6.2 0-3.6 3-5.6 3.8-9.3 2 1.3 3 3.2 3.2 5 1-.8 1.7-2 1.9-3.3 2.3 1.9 4.1 4.6 4.1 7.6 0 3.6-2.6 6.2-6.5 6.2z",
+  star: "M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z",
 };
 
-export function Icon({ name, className = "h-4 w-4", strokeWidth = 1.8 }) {
+/**
+ * Line icon. `duo` strokes it with the ember gradient (gold → orange → red),
+ * the reference's "line duotone" treatment — use it sparingly, for primary actions.
+ */
+export function Icon({ name, className = "h-4 w-4", strokeWidth = 1.8, duo = false }) {
+  const id = useId();
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke={duo ? `url(#${id})` : "currentColor"} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      {duo && (
+        <defs>
+          <linearGradient id={id} x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stopColor="#FCCE54" />
+            <stop offset=".55" stopColor="#FF8A3D" />
+            <stop offset="1" stopColor="#E5352B" />
+          </linearGradient>
+        </defs>
+      )}
       <path d={paths[name]} />
     </svg>
   );
@@ -50,18 +67,16 @@ export function Icon({ name, className = "h-4 w-4", strokeWidth = 1.8 }) {
 
 export function Logo({ size = "h-9 w-9" }) {
   return (
-    <span className={`${size} grid place-items-center rounded-xl bg-gradient-to-br from-accent-soft to-accent-deep text-ink`}>
-      <svg viewBox="0 0 32 32" className="h-3/5 w-3/5" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinejoin="round" aria-hidden="true">
-        <path d="M16 5l9 5v12l-9 5-9-5V10z" />
-      </svg>
+    <span className={`${size} grid place-items-center rounded-xl border border-[rgba(255,236,220,.1)] bg-raised`}>
+      <Icon name="hex" className="h-3/5 w-3/5" strokeWidth={2.4} duo />
     </span>
   );
 }
 
 const variants = {
-  primary: "bg-gradient-to-b from-accent-soft to-accent text-ink shadow-lg shadow-accent/20 hover:brightness-110",
-  secondary: "glass text-slate-50 hover:border-accent/30",
-  ghost: "text-muted hover:bg-white/5 hover:text-slate-50",
+  primary: "bg-cream text-ink hover:bg-white",
+  secondary: "glass text-cream hover:border-[rgba(255,236,220,.16)]",
+  ghost: "text-muted hover:bg-white/5 hover:text-cream",
   danger: "border border-down/30 bg-down/10 text-down hover:bg-down/20",
 };
 
@@ -98,7 +113,7 @@ export function CopyButton({ value, label, className = "" }) {
       type="button"
       onClick={copy}
       aria-label={label || "Copy"}
-      className={`inline-flex min-h-[36px] items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-semibold text-muted transition hover:bg-white/5 hover:text-slate-50 ${className}`}
+      className={`inline-flex min-h-[36px] items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-semibold text-muted transition hover:bg-white/5 hover:text-cream ${className}`}
     >
       <Icon name={done ? "check" : "copy"} className={`h-3.5 w-3.5 ${done ? "text-accent" : ""}`} />
       <span aria-live="polite">{done ? "Copied" : label}</span>
@@ -138,7 +153,7 @@ export function Modal({ title, onClose, children, wide }) {
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-white/15 sm:hidden" />
         <div className="mb-5 flex items-center justify-between gap-3">
           <h2 className="text-lg font-bold">{title}</h2>
-          <button onClick={onClose} aria-label="Close" className="grid h-10 w-10 place-items-center rounded-full text-muted transition hover:bg-white/5 hover:text-slate-50">
+          <button onClick={onClose} aria-label="Close" className="grid h-10 w-10 place-items-center rounded-full text-muted transition hover:bg-white/5 hover:text-cream">
             <Icon name="x" />
           </button>
         </div>
@@ -152,7 +167,7 @@ export function Notice({ tone = "warn", children }) {
   const tones = {
     warn: "border-amber-400/25 bg-amber-400/10 text-amber-100",
     danger: "border-down/30 bg-down/10 text-rose-100",
-    info: "border-accent/25 bg-accent/10 text-accent-soft",
+    info: "border-[rgba(255,236,220,.08)] bg-raised text-cream/85",
   };
   return (
     <div className={`flex gap-3 rounded-2xl border p-3 text-sm leading-relaxed ${tones[tone]}`}>
@@ -186,7 +201,7 @@ export function Change({ value, className = "" }) {
   if (value == null || !isFinite(value)) return <span className={`text-muted ${className}`}>—</span>;
   const up = value >= 0;
   return (
-    <span className={`inline-flex items-center gap-1 tabular-nums ${up ? "text-up" : "text-down"} ${className}`}>
+    <span className={`inline-flex items-center gap-1 font-mono tabular-nums ${up ? "text-up" : "text-down"} ${className}`}>
       <svg viewBox="0 0 10 10" className={`h-2 w-2 ${up ? "" : "rotate-180"}`} aria-hidden="true"><path d="M5 1l4 7H1z" fill="currentColor" /></svg>
       <span className="sr-only">{up ? "up" : "down"}</span>
       {Math.abs(value).toFixed(2)}%
@@ -203,7 +218,7 @@ export function Segmented({ options, value, onChange, label, className = "" }) {
           role="tab"
           aria-selected={value === o.value}
           onClick={() => onChange(o.value)}
-          className={`min-h-[36px] flex-1 rounded-full px-4 text-xs font-bold transition ${value === o.value ? "bg-raised text-slate-50 shadow-pill" : "text-muted hover:text-slate-50"}`}
+          className={`min-h-[36px] flex-1 rounded-full px-4 text-xs font-bold transition ${value === o.value ? "bg-raised text-cream shadow-pill" : "text-muted hover:text-cream"}`}
         >
           {o.label}
         </button>

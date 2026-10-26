@@ -15,7 +15,7 @@ function Toolbar({ interval, setInterval, type, setType, compact }) {
             role="tab"
             aria-selected={interval === i.id}
             onClick={() => setInterval(i.id)}
-            className={`min-h-[32px] rounded-lg px-2.5 text-xs font-semibold transition ${interval === i.id ? "bg-white/10 text-white" : "text-muted hover:text-white"}`}
+            className={`min-h-[32px] rounded-lg px-2.5 text-xs font-semibold transition ${interval === i.id ? "bg-raised text-cream" : "text-muted hover:text-cream"}`}
           >
             {i.label}
           </button>
@@ -23,7 +23,7 @@ function Toolbar({ interval, setInterval, type, setType, compact }) {
       </div>
       <div className="flex gap-1 rounded-lg bg-white/[.04] p-0.5" role="group" aria-label="Chart type">
         {[["candles", "Candles", "bars"], ["line", "Line", "chart"]].map(([id, label, icon]) => (
-          <button key={id} aria-pressed={type === id} aria-label={label} onClick={() => setType(id)} className={`min-h-[28px] rounded-md px-2.5 text-xs font-semibold transition ${type === id ? "bg-accent text-accent-ink" : "text-muted hover:text-white"}`}>
+          <button key={id} aria-pressed={type === id} aria-label={label} onClick={() => setType(id)} className={`min-h-[28px] rounded-md px-2.5 text-xs font-semibold transition ${type === id ? "bg-raised text-cream shadow-pill" : "text-muted hover:text-cream"}`}>
             {compact ? <Icon name={icon} className="h-3.5 w-3.5" /> : label}
           </button>
         ))}

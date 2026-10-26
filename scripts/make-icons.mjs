@@ -1,11 +1,20 @@
-// Renders the Aurum logo (gold rounded square + navy hexagon outline) to PNG
+// Renders the Aurum logo (dark rounded square + ember-gradient hexagon outline) to PNG
 // at the sizes Chrome needs. Dependency-free: rasterises with supersampling and
 // encodes PNG with node:zlib. Run: node scripts/make-icons.mjs
 import { writeFileSync, mkdirSync } from "node:fs";
 import { deflateSync } from "node:zlib";
 
-const GOLD = [0xf5, 0x9e, 0x0b];
-const INK = [0x0f, 0x17, 0x2a];
+const BG = [0x1a, 0x16, 0x14];
+// Ember gradient along the diagonal: gold -> orange -> red.
+const STOPS = [[0, [0xfc, 0xce, 0x54]], [0.55, [0xff, 0x8a, 0x3d]], [1, [0xe5, 0x35, 0x2b]]];
+function ember(t) {
+  for (let i = 0; i < STOPS.length - 1; i++) {
+    const [a, ca] = STOPS[i];
+    const [b, cb] = STOPS[i + 1];
+    if (t <= b) return ca.map((c, k) => c + ((cb[k] - c) * (t - a)) / (b - a));
+  }
+  return STOPS.at(-1)[1];
+}
 
 function crc32(buf) {
   let c, crc = 0xffffffff;
@@ -44,7 +53,7 @@ function png(size, pixel) {
 }
 
 // Geometry in a 32×32 design space (matches public/favicon.svg).
-const hex = [[16, 7], [23, 11], [23, 21], [16, 25], [9, 21], [9, 11]];
+const hex = [[16, 6.5], [24, 11], [24, 21], [16, 25.5], [8, 21], [8, 11]];
 const distToSeg = (px, py, [ax, ay], [bx, by]) => {
   const dx = bx - ax, dy = by - ay;
   const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)));
@@ -69,7 +78,8 @@ function render(size) {
     const n = ss * ss;
     const cover = (bg + ink) / n;
     if (!cover) return [0, 0, 0, 0];
-    const mix = (c) => Math.round((GOLD[c] * bg + INK[c] * ink) / (bg + ink));
+    const stroke = ember((x + y) / (2 * size));
+    const mix = (c) => Math.round((BG[c] * bg + stroke[c] * ink) / (bg + ink));
     return [mix(0), mix(1), mix(2), Math.round(cover * 255)];
   });
 }
