@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { coinIcon } from "../lib/market";
 
 const paths = {
@@ -43,23 +43,10 @@ const paths = {
   star: "M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z",
 };
 
-/**
- * Line icon. `duo` strokes it with the ember gradient (gold → orange → red),
- * the reference's "line duotone" treatment — use it sparingly, for primary actions.
- */
+/** Line icon. `duo` tints it with the ice accent — reserve for primary actions. */
 export function Icon({ name, className = "h-4 w-4", strokeWidth = 1.8, duo = false }) {
-  const id = useId();
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke={duo ? `url(#${id})` : "currentColor"} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
-      {duo && (
-        <defs>
-          <linearGradient id={id} x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor="#FCCE54" />
-            <stop offset=".55" stopColor="#FF8A3D" />
-            <stop offset="1" stopColor="#E5352B" />
-          </linearGradient>
-        </defs>
-      )}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={`${className} ${duo ? "text-accent" : ""}`} aria-hidden="true">
       <path d={paths[name]} />
     </svg>
   );
@@ -67,16 +54,18 @@ export function Icon({ name, className = "h-4 w-4", strokeWidth = 1.8, duo = fal
 
 export function Logo({ size = "h-9 w-9" }) {
   return (
-    <span className={`${size} grid place-items-center rounded-xl border border-[rgba(255,236,220,.1)] bg-raised`}>
-      <Icon name="hex" className="h-3/5 w-3/5" strokeWidth={2.4} duo />
+    <span className={`${size} grid shrink-0 place-items-center rounded-xl border border-[rgba(226,236,255,.1)] bg-gradient-to-b from-[#1B1F26] to-[#121418]`}>
+      <svg viewBox="0 0 24 24" className="h-3/5 w-3/5" fill="none" strokeWidth="2.4" strokeLinejoin="round" aria-hidden="true">
+        <path d={paths.hex} stroke="#B8E4FF" />
+      </svg>
     </span>
   );
 }
 
 const variants = {
-  primary: "bg-cream text-ink hover:bg-white",
-  secondary: "glass text-cream hover:border-[rgba(255,236,220,.16)]",
-  ghost: "text-muted hover:bg-white/5 hover:text-cream",
+  primary: "bg-fg text-ink hover:bg-white",
+  secondary: "glass text-fg hover:border-[rgba(226,236,255,.16)]",
+  ghost: "text-muted hover:bg-white/5 hover:text-fg",
   danger: "border border-down/30 bg-down/10 text-down hover:bg-down/20",
 };
 
@@ -85,7 +74,7 @@ export function Button({ variant = "primary", icon, loading, children, className
     <button
       {...props}
       disabled={props.disabled || loading}
-      className={`inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-bold transition duration-200 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${className}`}
+      className={`inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-semibold transition duration-200 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${className}`}
     >
       {loading ? <Spinner /> : icon && <Icon name={icon} />}
       {children}
@@ -113,7 +102,7 @@ export function CopyButton({ value, label, className = "" }) {
       type="button"
       onClick={copy}
       aria-label={label || "Copy"}
-      className={`inline-flex min-h-[36px] items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-semibold text-muted transition hover:bg-white/5 hover:text-cream ${className}`}
+      className={`inline-flex min-h-[36px] items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-semibold text-muted transition hover:bg-white/5 hover:text-fg ${className}`}
     >
       <Icon name={done ? "check" : "copy"} className={`h-3.5 w-3.5 ${done ? "text-accent" : ""}`} />
       <span aria-live="polite">{done ? "Copied" : label}</span>
@@ -153,7 +142,7 @@ export function Modal({ title, onClose, children, wide }) {
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-white/15 sm:hidden" />
         <div className="mb-5 flex items-center justify-between gap-3">
           <h2 className="text-lg font-bold">{title}</h2>
-          <button onClick={onClose} aria-label="Close" className="grid h-10 w-10 place-items-center rounded-full text-muted transition hover:bg-white/5 hover:text-cream">
+          <button onClick={onClose} aria-label="Close" className="grid h-10 w-10 place-items-center rounded-full text-muted transition hover:bg-white/5 hover:text-fg">
             <Icon name="x" />
           </button>
         </div>
@@ -167,7 +156,7 @@ export function Notice({ tone = "warn", children }) {
   const tones = {
     warn: "border-amber-400/25 bg-amber-400/10 text-amber-100",
     danger: "border-down/30 bg-down/10 text-rose-100",
-    info: "border-[rgba(255,236,220,.08)] bg-raised text-cream/85",
+    info: "border-[rgba(226,236,255,.08)] bg-raised text-fg/85",
   };
   return (
     <div className={`flex gap-3 rounded-2xl border p-3 text-sm leading-relaxed ${tones[tone]}`}>
@@ -184,7 +173,7 @@ export function TokenIcon({ asset, size = "h-11 w-11" }) {
   return (
     <span className={`relative grid ${size} shrink-0 place-items-center rounded-full ring-1 ring-white/10`} style={{ background: `radial-gradient(circle at 30% 25%, ${asset.color}55, ${asset.color}18 70%)` }}>
       {failed || asset.symbol.includes("…") ? (
-        <span className="text-[11px] font-extrabold tracking-tight" style={{ color: asset.color }}>
+        <span className="text-[11px] font-semibold tracking-tight" style={{ color: asset.color }}>
           {asset.symbol.replace("…", "").slice(0, 4)}
         </span>
       ) : (
@@ -201,7 +190,7 @@ export function Change({ value, className = "" }) {
   if (value == null || !isFinite(value)) return <span className={`text-muted ${className}`}>—</span>;
   const up = value >= 0;
   return (
-    <span className={`inline-flex items-center gap-1 font-mono tabular-nums ${up ? "text-up" : "text-down"} ${className}`}>
+    <span className={`inline-flex items-center gap-1 font-medium tabular-nums ${up ? "text-up" : "text-down"} ${className}`}>
       <svg viewBox="0 0 10 10" className={`h-2 w-2 ${up ? "" : "rotate-180"}`} aria-hidden="true"><path d="M5 1l4 7H1z" fill="currentColor" /></svg>
       <span className="sr-only">{up ? "up" : "down"}</span>
       {Math.abs(value).toFixed(2)}%
@@ -218,7 +207,7 @@ export function Segmented({ options, value, onChange, label, className = "" }) {
           role="tab"
           aria-selected={value === o.value}
           onClick={() => onChange(o.value)}
-          className={`min-h-[36px] flex-1 rounded-full px-4 text-xs font-bold transition ${value === o.value ? "bg-raised text-cream shadow-pill" : "text-muted hover:text-cream"}`}
+          className={`min-h-[36px] flex-1 rounded-full px-4 text-xs font-bold transition ${value === o.value ? "bg-raised text-fg shadow-pill" : "text-muted hover:text-fg"}`}
         >
           {o.label}
         </button>

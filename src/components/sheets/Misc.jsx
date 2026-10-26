@@ -84,8 +84,8 @@ export function AccountsSheet({ accounts, activeIndex, network, onNetwork, onSel
         {accounts.map((a) => {
           const active = a.index === activeIndex;
           return (
-            <li key={a.index} className={`flex items-center gap-3 rounded-2xl border p-3 transition ${active ? "border-[rgba(255,236,220,.22)] bg-raised" : "border-white/[.06] bg-ink/40 hover:border-white/15"}`}>
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[rgba(255,236,220,.1)] bg-raised text-sm font-semibold">
+            <li key={a.index} className={`flex items-center gap-3 rounded-2xl border p-3 transition ${active ? "border-[rgba(226,236,255,.22)] bg-raised" : "border-white/[.06] bg-ink/40 hover:border-white/15"}`}>
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[rgba(226,236,255,.1)] bg-raised text-sm font-semibold">
                 {a.name.slice(0, 1).toUpperCase()}
               </span>
               {editing === a.index ? (
@@ -97,7 +97,7 @@ export function AccountsSheet({ accounts, activeIndex, network, onNetwork, onSel
                 </button>
               )}
               {active && editing !== a.index && <Icon name="check" className="h-4 w-4 text-accent" />}
-              <button aria-label={`Rename ${a.name}`} onClick={() => { setName(a.name); setEditing(a.index); }} className="grid h-9 w-9 place-items-center rounded-full text-muted hover:bg-white/5 hover:text-cream">
+              <button aria-label={`Rename ${a.name}`} onClick={() => { setName(a.name); setEditing(a.index); }} className="grid h-9 w-9 place-items-center rounded-full text-muted hover:bg-white/5 hover:text-fg">
                 <Icon name="pencil" />
               </button>
             </li>
@@ -128,14 +128,14 @@ export function NotificationsSheet({ items, onClear, onClose }) {
           <ul className="space-y-2">
             {items.map((n) => (
               <li key={n.id} className="flex gap-3 rounded-2xl border border-white/[.06] bg-ink/40 p-3">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[rgba(255,236,220,.08)] bg-raised"><Icon name={NOTE_ICON[n.kind] ?? "bell"} duo /></span>
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[rgba(226,236,255,.08)] bg-raised"><Icon name={NOTE_ICON[n.kind] ?? "bell"} duo /></span>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold">{n.title}</p>
                   {n.body && <p className="truncate text-xs text-muted">{n.body}</p>}
                   <p className="mt-0.5 text-[11px] text-muted/80">{timeAgo(n.time)}</p>
                 </div>
                 {n.url && (
-                  <a href={n.url} target="_blank" rel="noreferrer" aria-label="Open in explorer" className="grid h-9 w-9 place-items-center self-center rounded-full text-muted hover:bg-white/5 hover:text-cream">
+                  <a href={n.url} target="_blank" rel="noreferrer" aria-label="Open in explorer" className="grid h-9 w-9 place-items-center self-center rounded-full text-muted hover:bg-white/5 hover:text-fg">
                     <Icon name="external" />
                   </a>
                 )}
@@ -192,7 +192,7 @@ export function AssetSheet({ asset, account, network, hidden, chart, onSend, onR
       <div className="flex items-center gap-4">
         <TokenIcon asset={asset} size="h-14 w-14" />
         <div>
-          <p className="text-2xl font-extrabold tabular-nums">{hidden ? "••••" : fmtAmount(asset.balance)} <span className="text-base text-muted">{asset.symbol}</span></p>
+          <p className="text-2xl font-semibold tabular-nums">{hidden ? "••••" : fmtAmount(asset.balance)} <span className="text-base text-muted">{asset.symbol}</span></p>
           <p className="text-sm text-muted">{hidden ? "••••" : fmtUsd(asset.usd)} · {network[asset.chain].name}</p>
         </div>
       </div>

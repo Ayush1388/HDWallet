@@ -24,7 +24,7 @@ export function Welcome({ onCreate, onImport }) {
         <Logo size="h-14 w-14" />
         <h1 className="mt-6 text-4xl font-semibold tracking-tight sm:text-5xl">
           Your keys.{" "}
-          <span className="text-ember">Your assets.</span>
+          <span className="text-ice">Your assets.</span>
         </h1>
         <p className="mt-4 max-w-md text-balance text-muted">
           A hierarchical deterministic wallet for Ethereum and Solana. Create unlimited accounts from a single recovery phrase.
@@ -37,7 +37,7 @@ export function Welcome({ onCreate, onImport }) {
       <div className="grid gap-3 sm:grid-cols-3">
         {features.map((f) => (
           <div key={f.title} className="card rounded-3xl p-4">
-            <span className="mb-3 grid h-9 w-9 place-items-center rounded-xl border border-[rgba(255,236,220,.08)] bg-raised">
+            <span className="mb-3 grid h-9 w-9 place-items-center rounded-xl border border-[rgba(226,236,255,.08)] bg-raised">
               <Icon name={f.icon} strokeWidth={2} duo />
             </span>
             <h3 className="text-sm font-semibold">{f.title}</h3>
@@ -82,7 +82,7 @@ const passwordError = (pw, confirm) =>
 
 function Back({ onClick }) {
   return (
-    <button onClick={onClick} className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted hover:text-cream">
+    <button onClick={onClick} className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted hover:text-fg">
       <Icon name="back" /> Back
     </button>
   );
@@ -92,7 +92,7 @@ function Steps({ step, total }) {
   return (
     <div className="mb-6 flex gap-1.5" aria-label={`Step ${step} of ${total}`}>
       {Array.from({ length: total }, (_, i) => (
-        <span key={i} className={`h-1 flex-1 rounded-full transition ${i < step ? "bg-cream" : "bg-line"}`} />
+        <span key={i} className={`h-1 flex-1 rounded-full transition ${i < step ? "bg-fg" : "bg-line"}`} />
       ))}
     </div>
   );
@@ -178,7 +178,7 @@ export function CreateFlow({ onBack, onDone }) {
             </div>
             <div className="mt-3 flex items-center justify-between">
               <CopyButton value={mnemonic} label="Copy phrase" />
-              <button onClick={toggleLength} className="text-xs text-muted hover:text-cream">
+              <button onClick={toggleLength} className="text-xs text-muted hover:text-fg">
                 Use {words24 ? "12" : "24"} words instead
               </button>
             </div>
@@ -287,7 +287,7 @@ export function Unlock({ onUnlock, onReset }) {
               </div>
             </div>
           ) : (
-            <button type="button" onClick={() => setConfirmReset(true)} className="text-xs text-muted hover:text-cream">
+            <button type="button" onClick={() => setConfirmReset(true)} className="text-xs text-muted hover:text-fg">
               Forgot password? Reset wallet
             </button>
           )}

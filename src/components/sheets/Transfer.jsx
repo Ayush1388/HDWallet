@@ -129,7 +129,7 @@ export function SendSheet({ account, rows, network, initialAssetId, initialTo = 
         <div className="space-y-4">
           <div className="flex flex-col items-center py-2 text-center">
             <TokenIcon asset={asset} size="h-14 w-14" />
-            <p className="mt-3 text-3xl font-extrabold tabular-nums">{amount} <span className="text-muted">{asset.symbol}</span></p>
+            <p className="mt-3 text-3xl font-semibold tabular-nums">{amount} <span className="text-muted">{asset.symbol}</span></p>
             {asset.price > 0 && <p className="text-sm text-muted">{fmtUsd(amt * asset.price)}</p>}
           </div>
           {asset.chain === "eth" && (
@@ -189,7 +189,7 @@ export function ReceiveSheet({ account, network, initialChain = "eth", onClose }
         <div className="mt-3 flex gap-2">
           <CopyButton value={address} label="Copy address" />
           {typeof navigator !== "undefined" && navigator.share && (
-            <button onClick={share} className="inline-flex min-h-[36px] items-center gap-1.5 rounded-xl px-2.5 text-xs font-semibold text-muted hover:bg-white/5 hover:text-cream">
+            <button onClick={share} className="inline-flex min-h-[36px] items-center gap-1.5 rounded-xl px-2.5 text-xs font-semibold text-muted hover:bg-white/5 hover:text-fg">
               <Icon name="external" className="h-3.5 w-3.5" /> Share
             </button>
           )}

@@ -15,7 +15,7 @@ function Toolbar({ interval, setInterval, type, setType, compact }) {
             role="tab"
             aria-selected={interval === i.id}
             onClick={() => setInterval(i.id)}
-            className={`min-h-[32px] rounded-lg px-2.5 text-xs font-semibold transition ${interval === i.id ? "bg-raised text-cream" : "text-muted hover:text-cream"}`}
+            className={`min-h-[32px] rounded-lg px-2.5 text-xs font-semibold transition ${interval === i.id ? "bg-raised text-fg" : "text-muted hover:text-fg"}`}
           >
             {i.label}
           </button>
@@ -23,7 +23,7 @@ function Toolbar({ interval, setInterval, type, setType, compact }) {
       </div>
       <div className="flex gap-1 rounded-lg bg-white/[.04] p-0.5" role="group" aria-label="Chart type">
         {[["candles", "Candles", "bars"], ["line", "Line", "chart"]].map(([id, label, icon]) => (
-          <button key={id} aria-pressed={type === id} aria-label={label} onClick={() => setType(id)} className={`min-h-[28px] rounded-md px-2.5 text-xs font-semibold transition ${type === id ? "bg-raised text-cream shadow-pill" : "text-muted hover:text-cream"}`}>
+          <button key={id} aria-pressed={type === id} aria-label={label} onClick={() => setType(id)} className={`min-h-[28px] rounded-md px-2.5 text-xs font-semibold transition ${type === id ? "bg-raised text-fg shadow-pill" : "text-muted hover:text-fg"}`}>
             {compact ? <Icon name={icon} className="h-3.5 w-3.5" /> : label}
           </button>
         ))}
@@ -72,7 +72,7 @@ export function CoinView({ symbol, variant = "full", actions }) {
         </div>
       </div>
       <div>
-        <p className={`${compact ? "text-2xl" : "text-3xl"} font-extrabold ${t ? (t.change >= 0 ? "text-up" : "text-down") : ""}`}>
+        <p className={`${compact ? "text-2xl" : "text-3xl"} font-semibold ${t ? (t.change >= 0 ? "text-up" : "text-down") : ""}`}>
           {t ? <LivePrice value={t.price} /> : <span className="skeleton inline-block h-8 w-36 align-middle" />}
         </p>
         <p className="text-xs text-muted">≈ ${fmtPrice(t?.price)} <Pct value={t?.change} className="ml-1 font-semibold" /></p>

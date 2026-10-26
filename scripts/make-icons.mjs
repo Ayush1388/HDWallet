@@ -1,13 +1,13 @@
-// Renders the Aurum logo (dark rounded square + ember-gradient hexagon outline) to PNG
+// Renders the Aurum logo (obsidian rounded square + ice-blue hexagon outline) to PNG
 // at the sizes Chrome needs. Dependency-free: rasterises with supersampling and
 // encodes PNG with node:zlib. Run: node scripts/make-icons.mjs
 import { writeFileSync, mkdirSync } from "node:fs";
 import { deflateSync } from "node:zlib";
 
-const BG = [0x1a, 0x16, 0x14];
-// Ember gradient along the diagonal: gold -> orange -> red.
-const STOPS = [[0, [0xfc, 0xce, 0x54]], [0.55, [0xff, 0x8a, 0x3d]], [1, [0xe5, 0x35, 0x2b]]];
-function ember(t) {
+const BG = [0x14, 0x17, 0x1c];
+// Ice gradient along the diagonal: frost white -> ice blue.
+const STOPS = [[0, [0xea, 0xf7, 0xff]], [0.5, [0x9c, 0xd6, 0xff]], [1, [0x5a, 0xb4, 0xf5]]];
+function ice(t) {
   for (let i = 0; i < STOPS.length - 1; i++) {
     const [a, ca] = STOPS[i];
     const [b, cb] = STOPS[i + 1];
@@ -78,7 +78,7 @@ function render(size) {
     const n = ss * ss;
     const cover = (bg + ink) / n;
     if (!cover) return [0, 0, 0, 0];
-    const stroke = ember((x + y) / (2 * size));
+    const stroke = ice((x + y) / (2 * size));
     const mix = (c) => Math.round((BG[c] * bg + stroke[c] * ink) / (bg + ink));
     return [mix(0), mix(1), mix(2), Math.round(cover * 255)];
   });

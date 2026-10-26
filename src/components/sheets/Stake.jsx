@@ -8,7 +8,7 @@ const STATE_STYLE = {
   active: "bg-up/15 text-up",
   activating: "bg-amber-400/15 text-amber-200",
   deactivating: "bg-amber-400/15 text-amber-200",
-  inactive: "bg-white/10 text-cream/90",
+  inactive: "bg-white/10 text-fg/90",
 };
 
 /**
@@ -70,7 +70,7 @@ export function StakeSheet({ account, network, sol, stakes, stakesLoading, stake
           ["Claimable", claimableSol],
         ].map(([k, v]) => (
           <div key={k} className="rounded-2xl border border-white/[.06] bg-ink/50 px-2 py-3">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">{k}</p>
+            <p className="text-xs font-medium text-muted">{k}</p>
             <p className="mt-1 font-bold tabular-nums">{fmtAmount(v)}</p>
           </div>
         ))}
@@ -100,7 +100,7 @@ export function StakeSheet({ account, network, sol, stakes, stakesLoading, stake
                       role="radio"
                       aria-checked={vote === v.vote}
                       onClick={() => setVote(v.vote)}
-                      className={`flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition ${vote === v.vote ? "border-[rgba(255,236,220,.22)] bg-raised" : "border-white/[.06] bg-ink/40 hover:border-white/15"}`}
+                      className={`flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition ${vote === v.vote ? "border-[rgba(226,236,255,.22)] bg-raised" : "border-white/[.06] bg-ink/40 hover:border-white/15"}`}
                     >
                       <span>
                         <span className="block font-mono text-sm">{shorten(v.vote, 8)}</span>
@@ -135,7 +135,7 @@ export function StakeSheet({ account, network, sol, stakes, stakesLoading, stake
       {tab === "positions" && (
         <div className="space-y-3">
           {claimable.length > 0 && (
-            <div className="flex items-center justify-between gap-3 rounded-2xl border border-[rgba(255,236,220,.12)] bg-raised p-4">
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-[rgba(226,236,255,.12)] bg-raised p-4">
               <div>
                 <p className="text-sm font-bold">{fmtAmount(claimableSol)} SOL ready to claim</p>
                 <p className="text-xs text-muted">From {claimable.length} inactive stake account{claimable.length > 1 ? "s" : ""}</p>

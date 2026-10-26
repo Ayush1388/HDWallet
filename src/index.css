@@ -5,38 +5,39 @@
 @layer base {
   html { color-scheme: dark; -webkit-tap-highlight-color: transparent; }
   body {
-    @apply m-0 min-h-[100dvh] bg-ink font-sans text-cream antialiased;
-    background-image: radial-gradient(800px 420px at 50% -12%, rgba(255,138,61,.06), transparent 70%);
+    @apply m-0 min-h-[100dvh] bg-ink font-sans text-fg antialiased;
+    letter-spacing: -0.006em;
+    background-image: radial-gradient(900px 460px at 50% -14%, rgba(124,200,255,.07), transparent 70%);
     background-attachment: fixed;
   }
-  ::selection { background: rgba(255,138,61,.3); }
+  ::selection { background: rgba(124,200,255,.3); }
   :focus-visible { @apply outline-none ring-2 ring-accent/70 ring-offset-2 ring-offset-ink; }
   button, a, [role="button"] { cursor: pointer; }
 }
 
 @layer components {
-  .glass { @apply border border-[rgba(255,236,220,.06)] bg-panel shadow-glass; }
+  .glass { @apply border border-[rgba(226,236,255,.07)] bg-gradient-to-b from-[#14171C] to-[#101216] shadow-glass; }
   .card { @apply glass rounded-[28px]; }
-  .pill { @apply glass inline-flex items-center gap-2.5 rounded-full transition hover:border-[rgba(255,236,220,.14)] active:scale-[.97]; }
+  .pill { @apply glass inline-flex items-center gap-2.5 rounded-full transition hover:border-[rgba(226,236,255,.14)] active:scale-[.97]; }
   .icon-btn {
-    @apply grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-[rgba(255,236,220,.07)] bg-panel text-cream transition
-      hover:border-[rgba(255,236,220,.16)] active:scale-95;
+    @apply grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-[rgba(226,236,255,.07)] bg-panel text-fg transition
+      hover:border-[rgba(226,236,255,.16)] active:scale-95;
   }
   .input {
-    @apply w-full rounded-2xl border border-line bg-ink/70 px-4 py-3 text-[15px] text-cream
+    @apply w-full rounded-2xl border border-line bg-ink/70 px-4 py-3 text-[15px] text-fg
       placeholder:text-muted/70 transition focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/20;
   }
-  .label { @apply mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-muted; }
+  .label { @apply mb-1.5 block text-xs font-medium text-muted; }
   .chip { @apply inline-flex min-h-[34px] items-center rounded-full border px-3.5 text-xs font-semibold transition; }
-  .chip-on { @apply border-[rgba(255,236,220,.16)] bg-raised text-cream; }
-  .chip-off { @apply border-transparent text-muted hover:text-cream; }
-  /* Ember gradient, used for thin text accents only. */
-  .text-ember { @apply bg-gradient-to-r from-accent-soft via-accent to-accent-deep bg-clip-text text-transparent; }
+  .chip-on { @apply border-[rgba(226,236,255,.16)] bg-raised text-fg; }
+  .chip-off { @apply border-transparent text-muted hover:text-fg; }
+  /* Frosted white -> ice, for one headline word only. */
+  .text-ice { @apply bg-gradient-to-br from-white via-accent-soft to-accent bg-clip-text text-transparent; }
   .no-scrollbar { scrollbar-width: none; }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .skeleton {
     @apply rounded-lg bg-[length:200%_100%] animate-shimmer;
-    background-image: linear-gradient(90deg, rgba(255,236,220,.03) 0%, rgba(255,236,220,.08) 50%, rgba(255,236,220,.03) 100%);
+    background-image: linear-gradient(90deg, rgba(226,236,255,.03) 0%, rgba(226,236,255,.07) 50%, rgba(226,236,255,.03) 100%);
   }
   .tabular { font-variant-numeric: tabular-nums; }
 }
