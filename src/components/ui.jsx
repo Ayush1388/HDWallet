@@ -53,11 +53,13 @@ export function Icon({ name, className = "h-4 w-4", strokeWidth = 1.8, duo = fal
   );
 }
 
-export function Logo({ size = "h-9 w-9" }) {
+/** Monochrome mark. `tone="light"` = white tile (dark UIs), `tone="dark"` = black tile (light pages). */
+export function Logo({ size = "h-9 w-9", tone = "light" }) {
+  const dark = tone === "dark";
   return (
-    <span className={`${size} grid shrink-0 place-items-center rounded-[30%] bg-accent`}>
+    <span className={`${size} grid shrink-0 place-items-center rounded-[30%] ${dark ? "bg-[#1D1D1F]" : "bg-white"}`}>
       <svg viewBox="0 0 24 24" className="h-3/5 w-3/5" fill="none" strokeWidth="2.6" strokeLinejoin="round" aria-hidden="true">
-        <path d={paths.hex} stroke="#03140A" />
+        <path d={paths.hex} stroke={dark ? "#FFFFFF" : "#000000"} />
       </svg>
     </span>
   );

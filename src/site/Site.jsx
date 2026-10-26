@@ -4,8 +4,8 @@ import { match, navigate, useRoute } from "../lib/router";
 import { COIN_BY_SYMBOL, fmtPrice } from "../lib/market";
 import { MarketTable } from "../market/MarketList";
 import { sortTickers } from "../market/sort";
-import { useSparklines, useTickers } from "../market/hooks";
-import { CoinIcon, GlowLine, Pct } from "../market/parts";
+import { useTickers } from "../market/hooks";
+import { CoinIcon, Pct } from "../market/parts";
 
 const CoinView = lazy(() => import("../market/CoinView").then((m) => ({ default: m.CoinView })));
 const WalletApp = lazy(() => import("../wallet/WalletApp"));
@@ -13,23 +13,26 @@ const WalletApp = lazy(() => import("../wallet/WalletApp"));
 export const EXTENSION_ZIP = "downloads/aurum-wallet-extension.zip";
 export const DEMO_URL = "./?demo#/wallet";
 
-const WRAP = "mx-auto max-w-7xl px-4 sm:px-6";
-const BTN = "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition duration-300";
-const BTN_NEON = `${BTN} bg-accent text-accent-ink shadow-neon hover:-translate-y-0.5 hover:bg-accent-soft`;
-const BTN_GHOST = `${BTN} border border-white/10 bg-white/[.03] text-fg hover:-translate-y-0.5 hover:border-accent/50`;
+// Monochrome, Apple-style site. Light (#F5F5F7) and black chapters alternate; colour appears
+// only as green/red on market data. Structure: dark inset hero -> live extension -> markets ->
+// black security chapter -> get started -> footer.
+const GUTTER = "px-4 sm:px-8 lg:px-12";
+const PILL = "inline-flex items-center justify-center gap-2 rounded-full font-medium transition duration-300";
+const PILL_DARK = `${PILL} bg-site-ink text-white hover:bg-black hover:-translate-y-0.5`;
+const PILL_LIGHT = `${PILL} bg-white text-site-ink hover:bg-[#E8E8ED] hover:-translate-y-0.5`;
+const reduced = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const Loading = () => <div className="grid min-h-[50vh] place-items-center text-muted"><Spinner className="h-6 w-6" /></div>;
+const Loading = () => <div className="grid min-h-[50vh] place-items-center text-site-muted"><Spinner className="h-6 w-6" /></div>;
 
-// ---------------------------------------------------------------- motion helpers
+// ------------------------------------------------------------------ motion helpers
 
-/** True once the element has scrolled into view (stays true). */
 function useInView(threshold = 0.15) {
   const ref = useRef(null);
   const [seen, setSeen] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el || seen) return;
-    if (!("IntersectionObserver" in window)) return setSeen(true);
+    if (!("IntersectionObserver" in window) || reduced()) return setSeen(true);
     const io = new IntersectionObserver(([e]) => e.isIntersecting && (setSeen(true), io.disconnect()), { threshold });
     io.observe(el);
     return () => io.disconnect();
@@ -37,52 +40,70 @@ function useInView(threshold = 0.15) {
   return [ref, seen];
 }
 
-/** Fades + slides children in when scrolled into view; `delay` staggers siblings. */
+/** Fades and lifts its children in when scrolled into view; `delay` staggers siblings. */
 function Reveal({ children, delay = 0, className = "", as = "div" }) {
   const Tag = as;
   const [ref, seen] = useInView();
   return (
-    <Tag
-      ref={ref}
-      style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-all duration-700 ease-out ${seen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"} ${className}`}
-    >
+    <Tag ref={ref} style={{ transitionDelay: `${delay}ms` }} className={`transition-all duration-[900ms] ease-[cubic-bezier(.2,.8,.2,1)] ${seen ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"} ${className}`}>
       {children}
     </Tag>
   );
 }
 
-/** Counts from 0 to `to` once visible. */
-function CountUp({ to, suffix = "", duration = 1400 }) {
+/** Counts up to `to` once visible. */
+function CountUp({ to, suffix = "" }) {
   const [ref, seen] = useInView(0.4);
   const [n, setN] = useState(0);
   useEffect(() => {
     if (!seen) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return setN(to);
+    if (reduced()) return setN(to);
     const start = performance.now();
     let raf;
     const tick = (t) => {
-      const p = Math.min(1, (t - start) / duration);
-      setN(Math.round(to * (1 - (1 - p) ** 3)));
+      const p = Math.min(1, (t - start) / 1600);
+      setN(Math.round(to * (1 - (1 - p) ** 4)));
       if (p < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [seen, to, duration]);
+  }, [seen, to]);
   return <span ref={ref} className="tabular">{n.toLocaleString("en-US")}{suffix}</span>;
 }
 
-// ---------------------------------------------------------------- chrome
+/** 0 → 1 as the element travels from the bottom of the viewport to ~10% from the top. */
+function useScrollProgress() {
+  const ref = useRef(null);
+  const [p, setP] = useState(reduced() ? 1 : 0);
+  useEffect(() => {
+    if (reduced()) return;
+    let raf;
+    const on = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const el = ref.current;
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        const vh = window.innerHeight;
+        setP(Math.max(0, Math.min(1, (vh - r.top) / (vh * 0.85))));
+      });
+    };
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    window.addEventListener("resize", on);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", on);
+      window.removeEventListener("resize", on);
+    };
+  }, []);
+  return [ref, p];
+}
+
+// ------------------------------------------------------------------ chrome
 
 function Header({ path }) {
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const on = () => setScrolled(window.scrollY > 8);
-    on();
-    window.addEventListener("scroll", on, { passive: true });
-    return () => window.removeEventListener("scroll", on);
-  }, []);
   const links = [
     ["/markets", "Markets"],
     ["/wallet", "Web wallet"],
@@ -90,32 +111,30 @@ function Header({ path }) {
   ];
   const active = (p) => path === p || (p === "/markets" && path.startsWith("/coin/"));
   return (
-    <header className={`sticky top-0 z-40 transition-colors duration-300 ${scrolled ? "border-b border-white/[.06] bg-ink/80 backdrop-blur-xl" : "border-b border-transparent"}`}>
-      <div className={`${WRAP} flex h-16 items-center justify-between gap-4`}>
-        <a href="#/" className="flex items-center gap-2.5" aria-label="Aurum home">
-          <Logo size="h-8 w-8" />
-          <span className="text-lg font-semibold tracking-tight">Aurum</span>
+    <header className="sticky top-0 z-40 border-b border-black/[.06] bg-site-bg/80 backdrop-blur-xl">
+      <div className={`${GUTTER} flex h-14 items-center justify-between gap-4`}>
+        <a href="#/" className="flex items-center gap-2 text-site-ink" aria-label="Aurum home">
+          <Logo size="h-7 w-7" tone="dark" />
+          <span className="text-[17px] font-semibold tracking-tight">Aurum</span>
         </a>
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
           {links.map(([href, label]) => (
-            <a key={href} href={`#${href}`} aria-current={active(href) ? "page" : undefined} className={`rounded-full px-4 py-2 text-sm font-medium transition ${active(href) ? "bg-white/[.07] text-fg" : "text-muted hover:text-fg"}`}>
+            <a key={href} href={`#${href}`} aria-current={active(href) ? "page" : undefined} className={`text-[13px] transition ${active(href) ? "text-site-ink" : "text-site-ink/70 hover:text-site-ink"}`}>
               {label}
             </a>
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <a href="#/download" className={`${BTN_NEON} hidden h-10 px-5 text-sm sm:inline-flex`}>
-            <Icon name="down" className="h-4 w-4" strokeWidth={2.4} /> Add to Chrome
-          </a>
-          <button className="icon-btn md:hidden" aria-label="Menu" aria-expanded={open} onClick={() => setOpen(!open)}>
+          <a href="#/download" className={`${PILL_DARK} hidden h-9 px-4 text-[13px] sm:inline-flex`}>Download</a>
+          <button className="grid h-10 w-10 place-items-center rounded-full text-site-ink hover:bg-black/5 md:hidden" aria-label="Menu" aria-expanded={open} onClick={() => setOpen(!open)}>
             <Icon name={open ? "x" : "menu"} className="h-5 w-5" />
           </button>
         </div>
       </div>
       {open && (
-        <nav className="border-t border-white/[.06] bg-ink px-4 py-2 md:hidden" aria-label="Mobile">
+        <nav className="border-t border-black/[.06] px-4 py-2 md:hidden" aria-label="Mobile">
           {links.map(([href, label]) => (
-            <a key={href} href={`#${href}`} onClick={() => setOpen(false)} className="block rounded-xl px-3 py-3 font-medium text-fg/90 hover:bg-white/5">{label}</a>
+            <a key={href} href={`#${href}`} onClick={() => setOpen(false)} className="block rounded-xl px-3 py-3 text-site-ink hover:bg-black/5">{label}</a>
           ))}
         </nav>
       )}
@@ -124,112 +143,123 @@ function Header({ path }) {
 }
 
 function Footer() {
+  const cols = [
+    ["Product", [["Download", "#/download"], ["Web wallet", "#/wallet"], ["Live demo", DEMO_URL]]],
+    ["Markets", [["All markets", "#/markets"], ["Bitcoin", "#/coin/BTC"], ["Ethereum", "#/coin/ETH"], ["Solana", "#/coin/SOL"]]],
+    ["Data", [["Binance market data", "https://www.binance.com"], ["TradingView charts", "https://www.tradingview.com/lightweight-charts/"]]],
+  ];
   return (
-    <footer className="mt-28 border-t border-white/[.06]">
-      <div className={`${WRAP} flex flex-col gap-6 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between`}>
-        <div className="flex items-center gap-2.5"><Logo size="h-7 w-7" /><span className="font-semibold text-fg">Aurum</span><span>· Non-custodial wallet for Ethereum &amp; Solana</span></div>
-        <div className="flex flex-wrap gap-x-6 gap-y-2">
-          <a href="#/markets" className="hover:text-fg">Markets</a>
-          <a href="#/wallet" className="hover:text-fg">Web wallet</a>
-          <a href="#/download" className="hover:text-fg">Download</a>
-          <span>Data: Binance · Charts: TradingView</span>
+    <footer className="bg-site-bg text-[12px] text-site-muted">
+      <div className={`${GUTTER} mx-auto max-w-6xl py-10`}>
+        <p className="border-b border-site-line pb-4">Aurum is a non-custodial wallet. You hold your keys; nobody can recover them for you. Market data is for information only and is not financial advice.</p>
+        <div className="grid gap-8 py-8 sm:grid-cols-3">
+          {cols.map(([title, links]) => (
+            <div key={title}>
+              <p className="font-semibold text-site-ink">{title}</p>
+              <ul className="mt-2 space-y-2">
+                {links.map(([label, href]) => (
+                  <li key={label}><a href={href} {...(href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})} className="hover:text-site-ink hover:underline">{label}</a></li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-site-line pt-4">
+          <span>Copyright © 2026 Aurum. All rights reserved.</span>
+          <span className="inline-flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-up" /> Markets live</span>
         </div>
       </div>
     </footer>
   );
 }
 
-// ---------------------------------------------------------------- landing
+// ------------------------------------------------------------------ landing
 
-/** Floating price chip that drifts beside the device. */
-function FloatChip({ symbol, className, alt }) {
-  const { tickers } = useTickers(20_000);
-  const t = tickers.find((x) => x.symbol === symbol);
+const ORBIT = ["BTC", "ETH", "SOL", "BNB", "XRP", "DOGE", "ADA", "LINK", "AVAX", "DOT"];
+
+/** Coin logos slowly orbiting behind the headline (monochrome until hovered). */
+function Orbit() {
   return (
-    <div className={`absolute z-20 hidden items-center gap-2.5 rounded-2xl border border-white/10 bg-panel/90 px-3 py-2.5 shadow-dock backdrop-blur lg:flex ${alt ? "animate-floatAlt" : "animate-float"} ${className}`}>
-      <CoinIcon symbol={symbol} size="h-8 w-8" />
-      <div className="text-xs">
-        <p className="font-semibold">{symbol} <span className="text-muted">${fmtPrice(t?.price)}</span></p>
-        <Pct value={t?.change} className="text-xs" />
+    <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 -z-10 hidden h-[860px] w-[860px] -translate-x-1/2 -translate-y-1/2 md:block">
+      <div className="absolute inset-0 rounded-full border border-white/[.06]" />
+      <div className="absolute inset-[18%] rounded-full border border-white/[.05]" />
+      <div className="absolute inset-0 animate-orbit">
+        {ORBIT.map((sym, i) => {
+          const a = (i / ORBIT.length) * 360;
+          return (
+            <div key={sym} className="absolute left-1/2 top-1/2" style={{ transform: `rotate(${a}deg) translateX(430px) rotate(${-a}deg)` }}>
+              <div className="-translate-x-1/2 -translate-y-1/2 animate-counter opacity-40 grayscale">
+                <CoinIcon symbol={sym} size="h-10 w-10" />
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 }
 
+/** Black inset hero with a cursor-following spotlight, dot field and orbiting coins. */
 function Hero() {
+  const card = useRef(null);
+  const onMove = (e) => {
+    const el = card.current;
+    if (!el || reduced()) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--x", `${e.clientX - r.left}px`);
+    el.style.setProperty("--y", `${e.clientY - r.top}px`);
+  };
   const lines = ["Your keys.", "Every market.", "One extension."];
   return (
-    <section className="relative isolate overflow-hidden">
-      {/* animated perspective grid + glow */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[70%]">
-        <div className="neon-grid absolute inset-0 animate-gridMove" />
-      </div>
-      <div aria-hidden="true" className="pointer-events-none absolute right-[8%] top-[18%] -z-10 h-[420px] w-[420px] animate-pulseGlow rounded-full bg-accent/25 blur-[110px]" />
+    <section className={`${GUTTER} pt-4`}>
+      <div
+        ref={card}
+        onMouseMove={onMove}
+        className="relative isolate flex min-h-[min(780px,86vh)] flex-col items-center justify-center overflow-hidden rounded-[36px] bg-site-dark px-6 py-28 text-center text-white [--x:50%] [--y:30%]"
+      >
+        {/* dot field + spotlight */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(rgba(255,255,255,.09)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:radial-gradient(ellipse_at_center,#000_30%,transparent_75%)]" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(520px_circle_at_var(--x)_var(--y),rgba(255,255,255,.10),transparent_60%)] transition-[background] duration-200" />
+        <Orbit />
 
-      <div className={`${WRAP} grid items-center gap-16 pb-24 pt-14 lg:grid-cols-[1.1fr_auto] lg:pt-20`}>
-        <div>
-          <span className="inline-flex animate-rise items-center gap-2 rounded-full border border-accent/30 bg-accent/[.08] px-3.5 py-1.5 text-xs font-medium text-accent">
-            <span className="relative flex h-2 w-2"><span className="absolute inset-0 animate-ping rounded-full bg-accent" /><span className="relative h-2 w-2 rounded-full bg-accent" /></span>
-            Live on Ethereum &amp; Solana
-          </span>
-          <h1 className="mt-7 text-[52px] font-semibold leading-[0.98] tracking-display sm:text-[76px] lg:text-[88px]">
-            {lines.map((l, i) => (
-              <span key={l} className="block overflow-hidden pb-1">
-                <span className={`block animate-lineUp ${i === 2 ? "text-neon" : ""}`} style={{ animationDelay: `${120 + i * 140}ms` }}>{l}</span>
-              </span>
-            ))}
-          </h1>
-          <p className="mt-6 max-w-lg animate-rise text-lg leading-relaxed text-muted [animation-delay:600ms]">
-            A non-custodial wallet in your browser toolbar. Hold, send and stake across two chains, with pro charts for every coin built in.
-          </p>
-          <div className="mt-9 flex animate-rise flex-wrap gap-3 [animation-delay:750ms]">
-            <a href="#/download" className={`${BTN_NEON} h-14 px-7 text-base`}><Icon name="down" className="h-5 w-5" strokeWidth={2.4} /> Add to Chrome — free</a>
-            <a href={DEMO_URL} target="_blank" rel="noreferrer" className={`${BTN_GHOST} h-14 px-7 text-base`}>Open live demo <Icon name="external" className="h-4 w-4" /></a>
-          </div>
-          <dl className="mt-12 grid max-w-md animate-rise grid-cols-3 gap-6 [animation-delay:900ms]">
-            <div><dt className="text-xs text-muted">Live markets</dt><dd className="mt-1 text-3xl font-semibold"><CountUp to={35} suffix="+" /></dd></div>
-            <div><dt className="text-xs text-muted">Chains</dt><dd className="mt-1 text-3xl font-semibold"><CountUp to={2} /></dd></div>
-            <div><dt className="text-xs text-muted">Data collected</dt><dd className="mt-1 text-3xl font-semibold">0</dd></div>
-          </dl>
+        <p className="animate-rise text-[15px] font-medium text-white/60 sm:text-[17px]">Aurum · the wallet that lives in your browser</p>
+        <h1 className="mt-5 text-[52px] font-semibold leading-[1.02] tracking-display sm:text-[84px] lg:text-[104px]">
+          {lines.map((l, i) => (
+            <span key={l} className="block overflow-hidden pb-[0.06em]">
+              <span className={`block animate-lineUp ${i === 2 ? "text-sheen-dark" : ""}`} style={{ animationDelay: `${150 + i * 160}ms` }}>{l}</span>
+            </span>
+          ))}
+        </h1>
+        <p className="mt-7 max-w-xl animate-rise text-lg text-white/60 [animation-delay:700ms] sm:text-xl">Hold, send and stake on Ethereum and Solana. Pro charts for every coin. Keys that never leave your device.</p>
+        <div className="mt-10 flex animate-rise flex-col items-center gap-4 [animation-delay:850ms] sm:flex-row">
+          <a href="#/download" className={`${PILL_LIGHT} h-14 px-8 text-[17px]`}><Icon name="down" className="h-5 w-5" /> Add to Chrome</a>
+          <a href="#preview" onClick={(e) => { e.preventDefault(); document.getElementById("preview")?.scrollIntoView({ behavior: "smooth" }); }} className="group inline-flex h-14 items-center gap-1.5 px-4 text-[17px] text-white/80 transition hover:text-white">
+            See it in action <Icon name="chevronRight" className="h-4 w-4 transition group-hover:translate-x-1" />
+          </a>
         </div>
-
-        {/* The real extension, floating */}
-        <div className="relative mx-auto animate-rise [animation-delay:300ms]">
-          <div aria-hidden="true" className="absolute -inset-6 -z-10 rounded-[48px] bg-accent/20 blur-3xl" />
-          <FloatChip symbol="BTC" className="-left-36 top-20" />
-          <FloatChip symbol="SOL" className="-right-28 bottom-32" alt />
-          <div className="animate-float">
-            <div className="w-[380px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-[28px] border border-white/10 bg-panel shadow-neon">
-              <div className="flex items-center gap-2 border-b border-white/[.06] px-3 py-2">
-                <span className="flex gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-white/15" /><i className="h-2.5 w-2.5 rounded-full bg-white/15" /><i className="h-2.5 w-2.5 rounded-full bg-white/15" /></span>
-                <span className="ml-auto flex items-center gap-1.5 rounded-full bg-white/[.06] px-2.5 py-1 text-[11px] text-fg/80"><Logo size="h-4 w-4" /> Aurum Wallet</span>
-              </div>
-              <iframe title="Aurum extension live demo" src={DEMO_URL} className="block h-[600px] w-full bg-ink" />
-            </div>
-          </div>
-        </div>
+        <span aria-hidden="true" className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-nudge text-white/40"><Icon name="chevron" className="h-6 w-6" /></span>
       </div>
     </section>
   );
 }
 
-/** Infinite live price ticker. */
+/** Live prices scrolling endlessly; logos stay grey until hovered. */
 function Ticker() {
   const { tickers } = useTickers(15_000);
   const list = useMemo(() => sortTickers(tickers, "volume").slice(0, 18), [tickers]);
-  if (!list.length) return <div className="h-[66px] border-y border-white/[.06]" />;
+  if (!list.length) return <div className="h-[64px]" />;
   const row = [...list, ...list];
   return (
-    <div className="group relative overflow-hidden border-y border-white/[.06] bg-panel/50" aria-label="Live prices">
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-ink to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-ink to-transparent" />
-      <ul className="flex w-max animate-marquee gap-10 py-4 group-hover:[animation-play-state:paused]">
+    <div className="mono-icons group relative mt-6 overflow-hidden" aria-label="Live prices">
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-28 bg-gradient-to-r from-site-bg to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-28 bg-gradient-to-l from-site-bg to-transparent" />
+      <ul className="flex w-max animate-marquee gap-3 py-2 group-hover:[animation-play-state:paused]">
         {row.map((t, i) => (
           <li key={`${t.pair}-${i}`} aria-hidden={i >= list.length}>
-            <a href={`#/coin/${t.symbol}`} className="flex items-center gap-2.5 text-sm">
+            <a href={`#/coin/${t.symbol}`} className="flex items-center gap-2.5 rounded-full bg-white px-4 py-2.5 text-sm text-site-ink shadow-[0_1px_2px_rgba(0,0,0,.05)] transition hover:-translate-y-0.5">
               <CoinIcon symbol={t.symbol} size="h-6 w-6" />
               <span className="font-semibold">{t.symbol}</span>
-              <span className="tabular text-fg/80">${fmtPrice(t.price)}</span>
+              <span className="tabular text-site-muted">${fmtPrice(t.price)}</span>
               <Pct value={t.change} className="text-xs" />
             </a>
           </li>
@@ -239,114 +269,140 @@ function Ticker() {
   );
 }
 
-function SectionHead({ kicker, title, children }) {
-  return (
-    <Reveal className="mb-10 max-w-2xl">
-      <p className="text-sm font-semibold text-accent">{kicker}</p>
-      <h2 className="mt-3 text-4xl font-semibold leading-tight tracking-tightest sm:text-5xl">{title}</h2>
-      {children && <p className="mt-4 text-lg text-muted">{children}</p>}
-    </Reveal>
-  );
-}
-
-function MarketsTeaser() {
-  return (
-    <section className={`${WRAP} pt-28`}>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <SectionHead kicker="Markets" title="Every coin, charted live.">Prices stream straight from Binance. Click any row for candles, order book and trades.</SectionHead>
-        <Reveal className="mb-10"><a href="#/markets" className={`${BTN_GHOST} h-11 px-5 text-sm`}>All markets <Icon name="send" className="h-4 w-4" /></a></Reveal>
-      </div>
-      <Reveal delay={100}><MarketTable limit={8} onOpen={(s) => navigate(`/coin/${s}`)} /></Reveal>
-    </section>
-  );
-}
-
-/** Bento grid of features with hover lift and a live mini chart. */
-function Features() {
-  const sparks = useSparklines(["ETHUSDT"]);
-  const small = [
-    ["shield", "Non-custodial", "Your phrase is encrypted with AES-256 on your device. We never see your keys."],
-    ["key", "One phrase, two chains", "Unlimited Ethereum and Solana accounts from a single recovery phrase."],
-    ["swap", "Send anything", "ETH, SOL, ERC-20 and SPL tokens with live fee estimates."],
-    ["stake", "Earn", "Stake SOL with top validators, then unstake and claim."],
-    ["lock", "Auto-lock", "Locks itself when you step away and forgets the session when the browser closes."],
+/** The real extension, tilting upright as it scrolls into view. */
+function ExtensionPreview() {
+  const [ref, p] = useScrollProgress();
+  const tilt = (1 - p) * 28;
+  const scale = 0.86 + p * 0.14;
+  const points = [
+    ["home", "Home", "Balance, 24h change, every token"],
+    ["bars", "Markets", "Live candles and order books"],
+    ["swap", "Transfer", "Any token, live network fees"],
+    ["stake", "Earn", "Stake SOL, claim rewards"],
   ];
-  const card = "group relative overflow-hidden rounded-3xl border border-white/[.07] bg-panel p-6 transition duration-300 hover:-translate-y-1 hover:border-accent/40 hover:shadow-neon";
   return (
-    <section className={`${WRAP} pt-28`}>
-      <SectionHead kicker="Why Aurum" title="Built like a trading desk, safe like a vault." />
-      <div className="grid gap-4 md:grid-cols-3">
-        <Reveal className={`${card} md:col-span-2 md:row-span-2`}>
-          <span className="grid h-11 w-11 place-items-center rounded-2xl bg-accent/10 text-accent"><Icon name="bars" className="h-5 w-5" /></span>
-          <h3 className="mt-5 text-2xl font-semibold">Pro charts in your toolbar</h3>
-          <p className="mt-2 max-w-md text-muted">Candlesticks, depth and live trades for every listed coin — the same data traders use, one click from your wallet.</p>
-          <div className="mt-8 rounded-2xl border border-white/[.06] bg-ink/60 p-4">
-            <div className="flex items-center justify-between text-sm">
-              <span className="flex items-center gap-2 font-semibold"><CoinIcon symbol="ETH" size="h-6 w-6" /> ETH / USDT</span>
-              <span className="text-xs text-muted">7 days</span>
-            </div>
-            <GlowLine points={sparks.ETHUSDT} className="mt-3 h-40 w-full" />
+    <section id="preview" className={`${GUTTER} scroll-mt-20 pt-32`}>
+      <Reveal className="mx-auto max-w-3xl text-center text-site-ink">
+        <p className="text-[17px] font-semibold text-site-muted">Live demo</p>
+        <h2 className="mt-2 text-[44px] font-semibold leading-[1.05] tracking-display sm:text-[64px]">This is the extension.<br /><span className="text-sheen-light">Go ahead, tap around.</span></h2>
+        <p className="mx-auto mt-5 max-w-xl text-lg text-site-muted">The window below is the real popup, running on sample balances. Markets and charts are live.</p>
+      </Reveal>
+      <div ref={ref} className="mt-14 overflow-hidden rounded-[36px] bg-site-dark px-4 pt-14 [perspective:1400px] sm:px-10">
+        <div
+          className="mx-auto w-[392px] max-w-full origin-bottom overflow-hidden rounded-t-[28px] border border-b-0 border-white/10 bg-[#1C1C1E] shadow-[0_-30px_80px_-30px_rgba(255,255,255,.18)] will-change-transform"
+          style={{ transform: `rotateX(${tilt}deg) scale(${scale})` }}
+        >
+          <div className="flex items-center gap-2 px-3 py-2.5">
+            <span className="flex gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-white/20" /><i className="h-2.5 w-2.5 rounded-full bg-white/20" /><i className="h-2.5 w-2.5 rounded-full bg-white/20" /></span>
+            <span className="ml-auto flex items-center gap-1.5 rounded-full bg-white/[.08] px-2.5 py-1 text-[11px] text-white/80"><Logo size="h-4 w-4" /> Aurum Wallet</span>
           </div>
-        </Reveal>
-        {small.map(([icon, title, text], i) => (
-          <Reveal key={title} delay={80 * (i + 1)} className={card}>
-            <span className="grid h-11 w-11 place-items-center rounded-2xl bg-accent/10 text-accent transition group-hover:bg-accent group-hover:text-accent-ink"><Icon name={icon} className="h-5 w-5" /></span>
-            <h3 className="mt-5 text-lg font-semibold">{title}</h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
+          <iframe title="Aurum extension live demo" src={DEMO_URL} loading="lazy" className="block h-[600px] w-full bg-black" />
+        </div>
+      </div>
+      <ul className="mx-auto mt-5 grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {points.map(([icon, title, text], i) => (
+          <Reveal key={title} as="li" delay={i * 90} className="rounded-[28px] bg-white p-6 text-site-ink transition duration-300 hover:-translate-y-1 hover:shadow-lift">
+            <span className="grid h-11 w-11 place-items-center rounded-full bg-site-bg"><Icon name={icon} className="h-5 w-5" /></span>
+            <p className="mt-5 text-[19px] font-semibold tracking-tight">{title}</p>
+            <p className="mt-1 text-[15px] text-site-muted">{text}</p>
           </Reveal>
         ))}
-      </div>
-    </section>
-  );
-}
-
-function SecurityBand() {
-  const stats = [
-    [<CountUp key="a" to={600000} />, "PBKDF2 rounds protect your password"],
-    ["AES-256", "GCM encryption for your recovery phrase"],
-    [<CountUp key="b" to={0} />, "servers that ever see your keys"],
-  ];
-  return (
-    <section className={`${WRAP} pt-28`}>
-      <Reveal className="relative overflow-hidden rounded-[32px] border border-accent/20 bg-gradient-to-br from-accent/[.10] via-panel to-panel p-8 sm:p-12">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 animate-pulseGlow rounded-full bg-accent/20 blur-3xl" />
-        <p className="relative text-sm font-semibold text-accent">Security</p>
-        <h2 className="relative mt-3 max-w-2xl text-4xl font-semibold leading-tight tracking-tightest sm:text-5xl">Your keys are encrypted before they ever touch storage.</h2>
-        <div className="relative mt-10 grid gap-8 sm:grid-cols-3">
-          {stats.map(([value, label], i) => (
-            <Reveal key={label} delay={120 * i}>
-              <p className="text-4xl font-semibold text-neon">{value}</p>
-              <p className="mt-2 text-sm text-muted">{label}</p>
-            </Reveal>
-          ))}
-        </div>
+      </ul>
+      <Reveal className="mt-8 text-center">
+        <a href={DEMO_URL} target="_blank" rel="noreferrer" className="group inline-flex items-center gap-1.5 text-[17px] text-site-ink hover:underline">
+          Open the demo full screen <Icon name="chevronRight" className="h-4 w-4 transition group-hover:translate-x-1" />
+        </a>
       </Reveal>
     </section>
   );
 }
 
-function Download() {
+function MarketsTeaser() {
+  return (
+    <section className={`${GUTTER} pt-32`}>
+      <Reveal className="mb-10 flex flex-col items-start justify-between gap-6 text-site-ink sm:flex-row sm:items-end">
+        <div>
+          <p className="text-[17px] font-semibold text-site-muted">Markets</p>
+          <h2 className="mt-2 text-[44px] font-semibold leading-[1.05] tracking-display sm:text-[64px]">Every market.<br /><span className="text-sheen-light">Live.</span></h2>
+        </div>
+        <a href="#/markets" className={`${PILL_DARK} h-12 px-6 text-[15px]`}>All markets <Icon name="chevronRight" className="h-4 w-4" /></a>
+      </Reveal>
+      <Reveal delay={120} className="mono-icons">
+        <MarketTable limit={8} onOpen={(s) => navigate(`/coin/${s}`)} />
+      </Reveal>
+    </section>
+  );
+}
+
+const FEATURES = [
+  ["shield", "Non-custodial", "Your recovery phrase is encrypted on your device. Nobody else ever sees your keys."],
+  ["bars", "Pro charts", "Candlesticks, order books and live trades for every listed coin."],
+  ["key", "One phrase, two chains", "Unlimited Ethereum and Solana accounts from a single recovery phrase."],
+  ["swap", "Send anything", "ETH, SOL, ERC-20 and SPL tokens, with the network fee shown up front."],
+  ["stake", "Earn", "Delegate SOL to top validators, then unstake and claim in one place."],
+  ["lock", "Auto-lock", "Locks itself when you step away and forgets the session when the browser closes."],
+];
+
+/** Full-bleed black chapter: spec-sheet numbers counting up, then the feature list. */
+function Security() {
+  const specs = [
+    [<CountUp key="a" to={600000} />, "PBKDF2 rounds stretch your password"],
+    ["256-bit", "AES-GCM encryption for your phrase"],
+    [<CountUp key="b" to={0} />, "servers that ever hold your keys"],
+  ];
+  return (
+    <section className="mt-32 bg-site-dark py-32 text-white">
+      <div className={`${GUTTER} mx-auto max-w-6xl`}>
+        <Reveal className="text-center">
+          <p className="text-[17px] font-semibold text-white/50">Security</p>
+          <h2 className="mx-auto mt-3 max-w-4xl text-[44px] font-semibold leading-[1.05] tracking-display sm:text-[72px]">
+            Controlled by you.<br /><span className="text-sheen-dark">Secured by math.</span>
+          </h2>
+        </Reveal>
+        <div className="mt-20 grid gap-px overflow-hidden rounded-[28px] bg-white/10 sm:grid-cols-3">
+          {specs.map(([value, label], i) => (
+            <Reveal key={label} delay={i * 120} className="bg-site-dark2 p-8 text-center">
+              <p className="text-[44px] font-semibold tracking-tight sm:text-[56px]">{value}</p>
+              <p className="mt-1 text-white/55">{label}</p>
+            </Reveal>
+          ))}
+        </div>
+        <div className="mt-20 grid gap-x-12 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map(([icon, title, text], i) => (
+            <Reveal key={title} delay={(i % 3) * 100}>
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-white/10"><Icon name={icon} className="h-5 w-5" /></span>
+              <h3 className="mt-5 text-[21px] font-semibold tracking-tight">{title}</h3>
+              <p className="mt-2 leading-relaxed text-white/55">{text}</p>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function GetStarted() {
   const steps = [
-    ["Download", "Get the package below and unzip it."],
+    ["Download", "Get the package and unzip it."],
     ["Open extensions", "Go to chrome://extensions (or edge:// · brave://)."],
     ["Developer mode", "Switch it on in the top-right corner."],
     ["Load unpacked", "Pick the unzipped folder, then pin Aurum."],
   ];
   return (
-    <section id="download" className={`${WRAP} scroll-mt-24 pt-28`}>
-      <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+    <section id="download" className="scroll-mt-20 bg-white py-32 text-site-ink">
+      <div className={`${GUTTER} mx-auto max-w-6xl text-center`}>
         <Reveal>
-          <p className="text-sm font-semibold text-accent">Get started</p>
-          <h2 className="mt-3 text-5xl font-semibold leading-[1.02] tracking-display sm:text-6xl">Install Aurum<br />in a minute.</h2>
-          <p className="mt-4 max-w-md text-lg text-muted">Free and open source. Chrome, Edge, Brave, Arc and every Chromium browser.</p>
-          <a href={EXTENSION_ZIP} download className={`${BTN_NEON} mt-8 h-14 px-8 text-base`}><Icon name="down" className="h-5 w-5" strokeWidth={2.4} /> Download for Chrome</a>
-          <p className="mt-3 text-xs text-muted">Version 1.0.0 · Manifest V3 · 650 KB</p>
+          <p className="text-[17px] font-semibold text-site-muted">Free · Open source · Chrome, Edge, Brave, Arc</p>
+          <h2 className="mt-4 text-[56px] font-semibold leading-[1] tracking-display sm:text-[96px]">Get started.<br /><span className="text-sheen-light">Download Aurum.</span></h2>
+          <a href={EXTENSION_ZIP} download className={`${PILL_DARK} mt-12 h-16 px-10 text-[17px]`}><Icon name="down" className="h-5 w-5" /> Download for Chrome</a>
+          <p className="mt-4 text-sm text-site-muted">Version 1.0.0 · Manifest V3 · 650 KB</p>
         </Reveal>
-        <ol className="space-y-3">
+        <ol className="mt-20 grid gap-4 text-left sm:grid-cols-2 lg:grid-cols-4">
           {steps.map(([title, text], i) => (
-            <Reveal key={title} as="li" delay={100 * i} className="flex items-center gap-4 rounded-2xl border border-white/[.07] bg-panel p-5 transition hover:border-accent/40">
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent font-semibold text-accent-ink">{i + 1}</span>
-              <div><p className="font-semibold">{title}</p><p className="text-sm text-muted">{text}</p></div>
+            <Reveal key={title} as="li" delay={i * 90} className="rounded-[28px] bg-site-bg p-7 transition duration-300 hover:-translate-y-1 hover:shadow-lift">
+              <span className="text-[44px] font-semibold leading-none tracking-tight text-site-line">{String(i + 1).padStart(2, "0")}</span>
+              <p className="mt-6 text-[19px] font-semibold tracking-tight">{title}</p>
+              <p className="mt-1 text-[15px] text-site-muted">{text}</p>
             </Reveal>
           ))}
         </ol>
@@ -355,24 +411,24 @@ function Download() {
   );
 }
 
-// ---------------------------------------------------------------- other pages
+// ------------------------------------------------------------------ other pages
 
 function MarketsPage() {
   const [q, setQ] = useState("");
   return (
-    <div className={`${WRAP} py-10`}>
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div className={`${GUTTER} pb-24 pt-12`}>
+      <div className="mb-10 flex flex-col gap-6 text-site-ink sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-4xl font-semibold tracking-tightest sm:text-5xl">Markets</h1>
-          <p className="mt-2 text-muted">Live USDT spot prices. Pick a coin for candles, order book and trades.</p>
+          <h1 className="text-[52px] font-semibold leading-none tracking-display sm:text-[72px]">Markets</h1>
+          <p className="mt-3 text-lg text-site-muted">Live USDT spot prices. Pick a coin for candles, order book and trades.</p>
         </div>
-        <label className="relative w-full sm:w-72">
+        <label className="relative w-full sm:w-80">
           <span className="sr-only">Search coins</span>
-          <Icon name="search" className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-          <input className="input rounded-full pl-11" placeholder="Search coin" value={q} onChange={(e) => setQ(e.target.value)} />
+          <Icon name="search" className="pointer-events-none absolute left-5 top-1/2 h-4 w-4 -translate-y-1/2 text-site-muted" />
+          <input className="h-12 w-full rounded-full border border-site-line bg-white pl-12 pr-5 text-site-ink placeholder:text-site-muted focus:border-site-ink focus:outline-none focus:ring-4 focus:ring-black/5" placeholder="Search coin" value={q} onChange={(e) => setQ(e.target.value)} />
         </label>
       </div>
-      <MarketTable search={q} onOpen={(s) => navigate(`/coin/${s}`)} />
+      <div className="mono-icons"><MarketTable search={q} onOpen={(s) => navigate(`/coin/${s}`)} /></div>
     </div>
   );
 }
@@ -386,11 +442,11 @@ function CoinPage({ symbol }) {
     };
   }, [sym]);
   return (
-    <div className={`${WRAP} py-6`}>
-      <a href="#/markets" className="mb-4 inline-flex min-h-[36px] items-center gap-1.5 text-sm font-medium text-muted hover:text-fg">
+    <div className={`${GUTTER} pb-24 pt-6`}>
+      <a href="#/markets" className={`${PILL} mb-5 h-10 bg-white px-4 text-sm text-site-ink hover:bg-[#E8E8ED]`}>
         <Icon name="back" className="h-4 w-4" /> All markets
       </a>
-      {!COIN_BY_SYMBOL[sym] && <p className="mb-4 text-sm text-muted">{sym} isn't in our curated list — showing raw Binance data.</p>}
+      {!COIN_BY_SYMBOL[sym] && <p className="mb-4 text-sm text-site-muted">{sym} isn't in our curated list — showing raw Binance data.</p>}
       <Suspense fallback={<Loading />}>
         <CoinView key={sym} symbol={sym} variant="full" />
       </Suspense>
@@ -400,8 +456,16 @@ function CoinPage({ symbol }) {
 
 export default function Site() {
   const path = useRoute();
+  const isWallet = path === "/wallet";
 
-  if (path === "/wallet") {
+  // The site is light; the wallet keeps the extension's black surface.
+  useEffect(() => {
+    const b = document.body.style;
+    b.backgroundColor = isWallet ? "" : "#F5F5F7";
+    b.color = isWallet ? "" : "#1D1D1F";
+  }, [isWallet]);
+
+  if (isWallet) {
     return (
       <Suspense fallback={<Loading />}>
         <>
@@ -418,11 +482,11 @@ export default function Site() {
   let page;
   if (coin) page = <CoinPage symbol={coin.symbol} />;
   else if (path === "/markets") page = <MarketsPage />;
-  else if (path === "/download") page = <Download />;
-  else page = <><Hero /><Ticker /><MarketsTeaser /><Features /><SecurityBand /><Download /></>;
+  else if (path === "/download") page = <><GetStarted /><ExtensionPreview /><div className="pb-24" /></>;
+  else page = <><Hero /><Ticker /><ExtensionPreview /><MarketsTeaser /><Security /><GetStarted /></>;
 
   return (
-    <div className="flex min-h-[100dvh] flex-col">
+    <div className="flex min-h-[100dvh] flex-col bg-site-bg text-site-ink">
       <Header path={path} />
       <main className="flex-1">{page}</main>
       <Footer />

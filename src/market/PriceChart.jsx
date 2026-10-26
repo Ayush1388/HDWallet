@@ -20,7 +20,7 @@ export function PriceChart({ pair, interval = "1h", type = "candles", height = 4
       autoSize: true,
       layout: {
         background: { type: ColorType.Solid, color: "transparent" },
-        textColor: "#8D9099",
+        textColor: "#8E8E93",
         fontFamily: "Geist Mono, ui-monospace, monospace",
         fontSize: compact ? 10 : 11,
       },
@@ -32,8 +32,8 @@ export function PriceChart({ pair, interval = "1h", type = "candles", height = 4
       timeScale: { borderColor: "rgba(255,255,255,.08)", timeVisible: interval !== "1d" && interval !== "1w", secondsVisible: false, rightOffset: 4 },
       crosshair: {
         mode: CrosshairMode.Normal,
-        vertLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#26262B" },
-        horzLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#26262B" },
+        vertLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#3A3A3C" },
+        horzLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#3A3A3C" },
       },
       handleScroll: !compact || { horzTouchDrag: true, vertTouchDrag: false },
     });
@@ -41,14 +41,14 @@ export function PriceChart({ pair, interval = "1h", type = "candles", height = 4
     const main =
       type === "candles"
         ? chart.addSeries(CandlestickSeries, { upColor: UP, downColor: DOWN, borderVisible: false, wickUpColor: UP, wickDownColor: DOWN })
-        : chart.addSeries(AreaSeries, { lineColor: "#3CF27A", topColor: "rgba(60,242,122,.26)", bottomColor: "rgba(60,242,122,0)", lineWidth: 2 });
+        : chart.addSeries(AreaSeries, { lineColor: "#30D158", topColor: "rgba(48,209,88,.24)", bottomColor: "rgba(48,209,88,0)", lineWidth: 2 });
     main.priceScale().applyOptions({ scaleMargins: { top: 0.08, bottom: 0.24 } });
 
     const vol = chart.addSeries(HistogramSeries, { priceFormat: { type: "volume" }, priceScaleId: "vol", lastValueVisible: false, priceLineVisible: false });
     chart.priceScale("vol").applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
 
     const toMain = (c) => (type === "candles" ? c : { time: c.time, value: c.close });
-    const toVol = (c) => ({ time: c.time, value: c.volume, color: c.close >= c.open ? "rgba(46,224,124,.32)" : "rgba(246,70,93,.32)" });
+    const toVol = (c) => ({ time: c.time, value: c.volume, color: c.close >= c.open ? "rgba(48,209,88,.3)" : "rgba(255,69,58,.3)" });
 
     let unsub = () => {};
     let dead = false;
