@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { coinIcon } from "../lib/market";
+import { coinIcons } from "../lib/market";
 
 const paths = {
   copy: "M8 8h10v12H8zM6 16H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1",
@@ -171,16 +171,17 @@ export function Notice({ tone = "warn", children }) {
 
 /** Token logo (CDN) with a letter-avatar fallback, plus a chain dot for tokens. */
 export function TokenIcon({ asset, size = "h-11 w-11" }) {
-  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const logo = ({ WETH: "eth", wSOL: "sol" })[asset.symbol] ?? asset.symbol.toLowerCase();
+  const sources = coinIcons(logo);
   return (
     <span className={`relative grid ${size} shrink-0 place-items-center rounded-full ring-1 ring-white/10`} style={{ background: `radial-gradient(circle at 30% 25%, ${asset.color}55, ${asset.color}18 70%)` }}>
-      {failed || asset.symbol.includes("…") ? (
+      {attempt >= sources.length || asset.symbol.includes("…") ? (
         <span className="text-[11px] font-semibold tracking-tight" style={{ color: asset.color }}>
           {asset.symbol.replace("…", "").slice(0, 4)}
         </span>
       ) : (
-        <img src={coinIcon(logo)} alt="" loading="lazy" onError={() => setFailed(true)} className="h-full w-full rounded-full" />
+        <img key={attempt} src={sources[attempt]} alt="" loading="lazy" onError={() => setAttempt((a) => a + 1)} className="h-full w-full rounded-full" />
       )}
       {asset.address && (
         <span className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full ring-2 ring-panel ${asset.chain === "eth" ? "bg-eth" : "bg-sol"}`} title={asset.chain === "eth" ? "Ethereum" : "Solana"} />

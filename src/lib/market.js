@@ -97,9 +97,14 @@ export function subscribe(stream, onMessage) {
   };
 }
 
-/** Coin logo URL (falls back to a letter avatar in the UI on error). */
-export const coinIcon = (symbol) =>
-  `https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@0.18.1/svg/color/${symbol.toLowerCase()}.svg`;
+/**
+ * Coin logo URLs in brand colour, in fallback order: spothq's SVG set covers the classics,
+ * CoinCap covers newer coins (SUI, TON, PEPE…). The UI shows a letter avatar if both fail.
+ */
+export const coinIcons = (symbol) => [
+  `https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@0.18.1/svg/color/${symbol.toLowerCase()}.svg`,
+  `https://assets.coincap.io/assets/icons/${symbol.toLowerCase()}@2x.png`,
+];
 
 /** Price formatting with precision that suits the magnitude (BTC vs PEPE). */
 export function fmtPrice(n) {

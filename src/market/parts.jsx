@@ -1,16 +1,17 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { coinIcon, fmtPrice, fmtQty, getDepth, subscribe } from "../lib/market";
+import { coinIcons, fmtPrice, fmtQty, getDepth, subscribe } from "../lib/market";
 
 export function CoinIcon({ symbol, size = "h-9 w-9" }) {
-  const [failed, setFailed] = useState(false);
-  if (failed) {
+  const sources = coinIcons(symbol);
+  const [attempt, setAttempt] = useState(0);
+  if (attempt >= sources.length) {
     return (
       <span className={`${size} grid shrink-0 place-items-center rounded-full bg-gradient-to-br from-raised to-panel text-[10px] font-semibold text-fg ring-1 ring-white/10`} aria-hidden="true">
         {symbol.slice(0, 3)}
       </span>
     );
   }
-  return <img src={coinIcon(symbol)} alt="" loading="lazy" onError={() => setFailed(true)} className={`${size} shrink-0 rounded-full bg-white/5`} />;
+  return <img key={attempt} src={sources[attempt]} alt="" loading="lazy" onError={() => setAttempt((a) => a + 1)} className={`${size} shrink-0 rounded-full`} />;
 }
 
 export function Pct({ value, className = "" }) {

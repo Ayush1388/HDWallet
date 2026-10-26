@@ -177,7 +177,7 @@ function Footer() {
 
 const ORBIT = ["BTC", "ETH", "SOL", "BNB", "XRP", "DOGE", "ADA", "LINK", "AVAX", "DOT"];
 
-/** Coin logos slowly orbiting behind the headline (monochrome until hovered). */
+/** Coin logos slowly orbiting behind the headline. */
 function Orbit() {
   return (
     <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 -z-10 hidden h-[860px] w-[860px] -translate-x-1/2 -translate-y-1/2 md:block">
@@ -188,7 +188,7 @@ function Orbit() {
           const a = (i / ORBIT.length) * 360;
           return (
             <div key={sym} className="absolute left-1/2 top-1/2" style={{ transform: `rotate(${a}deg) translateX(430px) rotate(${-a}deg)` }}>
-              <div className="-translate-x-1/2 -translate-y-1/2 animate-counter opacity-40 grayscale">
+              <div className="-translate-x-1/2 -translate-y-1/2 animate-counter opacity-75">
                 <CoinIcon symbol={sym} size="h-10 w-10" />
               </div>
             </div>
@@ -243,14 +243,14 @@ function Hero() {
   );
 }
 
-/** Live prices scrolling endlessly; logos stay grey until hovered. */
+/** Live prices scrolling endlessly. */
 function Ticker() {
   const { tickers } = useTickers(15_000);
   const list = useMemo(() => sortTickers(tickers, "volume").slice(0, 18), [tickers]);
   if (!list.length) return <div className="h-[64px]" />;
   const row = [...list, ...list];
   return (
-    <div className="mono-icons group relative mt-6 overflow-hidden" aria-label="Live prices">
+    <div className="group relative mt-6 overflow-hidden" aria-label="Live prices">
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-28 bg-gradient-to-r from-site-bg to-transparent" />
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-28 bg-gradient-to-l from-site-bg to-transparent" />
       <ul className="flex w-max animate-marquee gap-3 py-2 group-hover:[animation-play-state:paused]">
@@ -327,7 +327,7 @@ function MarketsTeaser() {
         </div>
         <a href="#/markets" className={`${PILL_DARK} h-12 px-6 text-[15px]`}>All markets <Icon name="chevronRight" className="h-4 w-4" /></a>
       </Reveal>
-      <Reveal delay={120} className="mono-icons">
+      <Reveal delay={120}>
         <MarketTable limit={8} onOpen={(s) => navigate(`/coin/${s}`)} />
       </Reveal>
     </section>
@@ -428,7 +428,7 @@ function MarketsPage() {
           <input className="h-12 w-full rounded-full border border-site-line bg-white pl-12 pr-5 text-site-ink placeholder:text-site-muted focus:border-site-ink focus:outline-none focus:ring-4 focus:ring-black/5" placeholder="Search coin" value={q} onChange={(e) => setQ(e.target.value)} />
         </label>
       </div>
-      <div className="mono-icons"><MarketTable search={q} onOpen={(s) => navigate(`/coin/${s}`)} /></div>
+      <div><MarketTable search={q} onOpen={(s) => navigate(`/coin/${s}`)} /></div>
     </div>
   );
 }

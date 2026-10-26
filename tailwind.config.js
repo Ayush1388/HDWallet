@@ -16,8 +16,8 @@ export default {
         accent: { DEFAULT: "#FFFFFF", soft: "#E5E5EA", deep: "#D1D1D6", ink: "#000000" },
         up: "#30D158",
         down: "#FF453A",
-        eth: "#AEAEB2",
-        sol: "#AEAEB2",
+        eth: "#627EEA",
+        sol: "#14F195",
         // Website (light / dark alternating sections)
         site: { bg: "#F5F5F7", card: "#FFFFFF", ink: "#1D1D1F", muted: "#6E6E73", line: "#D2D2D7", dark: "#000000", dark2: "#161617" },
       },

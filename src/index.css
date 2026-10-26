@@ -42,9 +42,6 @@
   /* Apple-style display gradient: bright at the top, fading to grey. */
   .text-sheen-dark { @apply bg-gradient-to-b from-white via-white to-[#8E8E93] bg-clip-text text-transparent; }
   .text-sheen-light { @apply bg-gradient-to-b from-[#1D1D1F] via-[#1D1D1F] to-[#86868B] bg-clip-text text-transparent; }
-  /* Monochrome coin logos on the website; colour returns on hover. */
-  .mono-icons img { filter: grayscale(1) contrast(1.05); transition: filter .3s ease; }
-  .mono-icons a:hover img, .mono-icons tr:hover img, .mono-icons li:hover img { filter: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
