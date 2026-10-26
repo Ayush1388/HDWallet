@@ -13,13 +13,13 @@ export default {
         line: "#3A3A3C",
         muted: "#8E8E93",
         fg: { DEFAULT: "#F5F5F7", dim: "#D1D1D6" },
-        accent: { DEFAULT: "#FFFFFF", soft: "#E5E5EA", deep: "#D1D1D6", ink: "#000000" },
+        accent: { DEFAULT: "#7CC8FF", soft: "#B8E4FF", deep: "#3B9EEA", ink: "#06121C" },
         up: "#30D158",
         down: "#FF453A",
         eth: "#627EEA",
         sol: "#14F195",
         // Website (light / dark alternating sections)
-        site: { bg: "#F5F5F7", card: "#FFFFFF", ink: "#1D1D1F", muted: "#6E6E73", line: "#D2D2D7", dark: "#000000", dark2: "#161617" },
+        site: { ice: "#7CC8FF", icedeep: "#0A84D6", bg: "#F5F5F7", card: "#FFFFFF", ink: "#1D1D1F", muted: "#6E6E73", line: "#D2D2D7", dark: "#000000", dark2: "#161617" },
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
@@ -29,7 +29,7 @@ export default {
       boxShadow: {
         glass: "inset 0 1px 0 0 rgba(255,255,255,.04)",
         pill: "inset 0 1px 0 0 rgba(255,255,255,.05)",
-        glow: "0 0 0 1px rgba(255,255,255,.18), 0 10px 30px -10px rgba(255,255,255,.25)",
+        glow: "0 0 0 1px rgba(124,200,255,.35), 0 10px 30px -10px rgba(124,200,255,.4)",
         lift: "0 30px 60px -30px rgba(0,0,0,.35)",
         dock: "0 18px 40px -12px rgba(0,0,0,.8)",
       },

@@ -18,8 +18,9 @@ export const DEMO_URL = "./?demo#/wallet";
 // black security chapter -> get started -> footer.
 const GUTTER = "px-4 sm:px-8 lg:px-12";
 const PILL = "inline-flex items-center justify-center gap-2 rounded-full font-medium transition duration-300";
-const PILL_DARK = `${PILL} bg-site-ink text-white hover:bg-black hover:-translate-y-0.5`;
-const PILL_LIGHT = `${PILL} bg-white text-site-ink hover:bg-[#E8E8ED] hover:-translate-y-0.5`;
+const PILL_DARK = `${PILL} bg-site-icedeep text-white hover:bg-[#0A74BC] hover:-translate-y-0.5`;
+const PILL_LIGHT = `${PILL} bg-site-ice text-[#06121C] shadow-[0_8px_30px_-8px_rgba(124,200,255,.6)] hover:bg-[#B8E4FF] hover:-translate-y-0.5`;
+const PILL_ICE = `${PILL} bg-site-icedeep text-white hover:bg-[#0A74BC] hover:-translate-y-0.5`;
 const reduced = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const Loading = () => <div className="grid min-h-[50vh] place-items-center text-site-muted"><Spinner className="h-6 w-6" /></div>;
@@ -283,7 +284,7 @@ function ExtensionPreview() {
   return (
     <section id="preview" className={`${GUTTER} scroll-mt-20 pt-32`}>
       <Reveal className="mx-auto max-w-3xl text-center text-site-ink">
-        <p className="text-[17px] font-semibold text-site-muted">Live demo</p>
+        <p className="text-[17px] font-semibold text-site-icedeep">Live demo</p>
         <h2 className="mt-2 text-[44px] font-semibold leading-[1.05] tracking-display sm:text-[64px]">This is the extension.<br /><span className="text-sheen-light">Go ahead, tap around.</span></h2>
         <p className="mx-auto mt-5 max-w-xl text-lg text-site-muted">The window below is the real popup, running on sample balances. Markets and charts are live.</p>
       </Reveal>
@@ -302,14 +303,14 @@ function ExtensionPreview() {
       <ul className="mx-auto mt-5 grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {points.map(([icon, title, text], i) => (
           <Reveal key={title} as="li" delay={i * 90} className="rounded-[28px] bg-white p-6 text-site-ink transition duration-300 hover:-translate-y-1 hover:shadow-lift">
-            <span className="grid h-11 w-11 place-items-center rounded-full bg-site-bg"><Icon name={icon} className="h-5 w-5" /></span>
+            <span className="grid h-11 w-11 place-items-center rounded-full bg-site-ice/20 text-site-icedeep"><Icon name={icon} className="h-5 w-5" /></span>
             <p className="mt-5 text-[19px] font-semibold tracking-tight">{title}</p>
             <p className="mt-1 text-[15px] text-site-muted">{text}</p>
           </Reveal>
         ))}
       </ul>
       <Reveal className="mt-8 text-center">
-        <a href={DEMO_URL} target="_blank" rel="noreferrer" className="group inline-flex items-center gap-1.5 text-[17px] text-site-ink hover:underline">
+        <a href={DEMO_URL} target="_blank" rel="noreferrer" className="group inline-flex items-center gap-1.5 text-[17px] text-site-icedeep hover:underline">
           Open the demo full screen <Icon name="chevronRight" className="h-4 w-4 transition group-hover:translate-x-1" />
         </a>
       </Reveal>
@@ -322,7 +323,7 @@ function MarketsTeaser() {
     <section className={`${GUTTER} pt-32`}>
       <Reveal className="mb-10 flex flex-col items-start justify-between gap-6 text-site-ink sm:flex-row sm:items-end">
         <div>
-          <p className="text-[17px] font-semibold text-site-muted">Markets</p>
+          <p className="text-[17px] font-semibold text-site-icedeep">Markets</p>
           <h2 className="mt-2 text-[44px] font-semibold leading-[1.05] tracking-display sm:text-[64px]">Every market.<br /><span className="text-sheen-light">Live.</span></h2>
         </div>
         <a href="#/markets" className={`${PILL_DARK} h-12 px-6 text-[15px]`}>All markets <Icon name="chevronRight" className="h-4 w-4" /></a>
@@ -354,7 +355,7 @@ function Security() {
     <section className="mt-32 bg-site-dark py-32 text-white">
       <div className={`${GUTTER} mx-auto max-w-6xl`}>
         <Reveal className="text-center">
-          <p className="text-[17px] font-semibold text-white/50">Security</p>
+          <p className="text-[17px] font-semibold text-site-ice">Security</p>
           <h2 className="mx-auto mt-3 max-w-4xl text-[44px] font-semibold leading-[1.05] tracking-display sm:text-[72px]">
             Controlled by you.<br /><span className="text-sheen-dark">Secured by math.</span>
           </h2>
@@ -370,7 +371,7 @@ function Security() {
         <div className="mt-20 grid gap-x-12 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map(([icon, title, text], i) => (
             <Reveal key={title} delay={(i % 3) * 100}>
-              <span className="grid h-12 w-12 place-items-center rounded-full bg-white/10"><Icon name={icon} className="h-5 w-5" /></span>
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-site-ice/15 text-site-ice"><Icon name={icon} className="h-5 w-5" /></span>
               <h3 className="mt-5 text-[21px] font-semibold tracking-tight">{title}</h3>
               <p className="mt-2 leading-relaxed text-white/55">{text}</p>
             </Reveal>
@@ -392,7 +393,7 @@ function GetStarted() {
     <section id="download" className="scroll-mt-20 bg-white py-32 text-site-ink">
       <div className={`${GUTTER} mx-auto max-w-6xl text-center`}>
         <Reveal>
-          <p className="text-[17px] font-semibold text-site-muted">Free · Open source · Chrome, Edge, Brave, Arc</p>
+          <p className="text-[17px] font-semibold text-site-icedeep">Free · Open source · Chrome, Edge, Brave, Arc</p>
           <h2 className="mt-4 text-[56px] font-semibold leading-[1] tracking-display sm:text-[96px]">Get started.<br /><span className="text-sheen-light">Download Aurum.</span></h2>
           <a href={EXTENSION_ZIP} download className={`${PILL_DARK} mt-12 h-16 px-10 text-[17px]`}><Icon name="down" className="h-5 w-5" /> Download for Chrome</a>
           <p className="mt-4 text-sm text-site-muted">Version 1.0.0 · Manifest V3 · 650 KB</p>
@@ -400,7 +401,7 @@ function GetStarted() {
         <ol className="mt-20 grid gap-4 text-left sm:grid-cols-2 lg:grid-cols-4">
           {steps.map(([title, text], i) => (
             <Reveal key={title} as="li" delay={i * 90} className="rounded-[28px] bg-site-bg p-7 transition duration-300 hover:-translate-y-1 hover:shadow-lift">
-              <span className="text-[44px] font-semibold leading-none tracking-tight text-site-line">{String(i + 1).padStart(2, "0")}</span>
+              <span className="text-[44px] font-semibold leading-none tracking-tight text-site-ice">{String(i + 1).padStart(2, "0")}</span>
               <p className="mt-6 text-[19px] font-semibold tracking-tight">{title}</p>
               <p className="mt-1 text-[15px] text-site-muted">{text}</p>
             </Reveal>
@@ -425,7 +426,7 @@ function MarketsPage() {
         <label className="relative w-full sm:w-80">
           <span className="sr-only">Search coins</span>
           <Icon name="search" className="pointer-events-none absolute left-5 top-1/2 h-4 w-4 -translate-y-1/2 text-site-muted" />
-          <input className="h-12 w-full rounded-full border border-site-line bg-white pl-12 pr-5 text-site-ink placeholder:text-site-muted focus:border-site-ink focus:outline-none focus:ring-4 focus:ring-black/5" placeholder="Search coin" value={q} onChange={(e) => setQ(e.target.value)} />
+          <input className="h-12 w-full rounded-full border border-site-line bg-white pl-12 pr-5 text-site-ink placeholder:text-site-muted focus:border-site-icedeep focus:outline-none focus:ring-4 focus:ring-site-ice/30" placeholder="Search coin" value={q} onChange={(e) => setQ(e.target.value)} />
         </label>
       </div>
       <div><MarketTable search={q} onOpen={(s) => navigate(`/coin/${s}`)} /></div>

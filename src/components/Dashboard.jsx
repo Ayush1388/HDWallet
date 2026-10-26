@@ -64,7 +64,7 @@ function HeroCard({ account, network, totals, loading, hidden, spark, onToggleHi
   const up = totals.delta >= 0;
   return (
     <section className="relative overflow-hidden rounded-[28px] bg-accent p-5 text-accent-ink" aria-label="Portfolio balance">
-      <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-black/[.04] blur-2xl" />
+      <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-white/40 blur-2xl" />
       <div className="relative flex items-center justify-between gap-2">
         <button onClick={onAccounts} className="flex min-h-[40px] min-w-0 items-center gap-2.5 text-left" aria-label={`Account ${account.name}. Switch account`}>
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent-ink text-sm font-semibold text-accent">{account.name.slice(0, 1).toUpperCase()}</span>
@@ -91,12 +91,12 @@ function HeroCard({ account, network, totals, loading, hidden, spark, onToggleHi
           {loading && totals.usd === 0 ? (
             <div className="mt-1 h-10 w-44 animate-pulse rounded-lg bg-accent-ink/15" />
           ) : (
-            <p className="truncate text-[36px] font-semibold leading-tight tracking-tightest tabular" aria-live="polite">
+            <p className="truncate text-[30px] font-semibold leading-tight tracking-tightest tabular min-[420px]:text-[36px]" aria-live="polite">
               {hidden ? MASK : <>{whole}<span className="text-accent-ink/45">.{cents}</span></>}
             </p>
           )}
         </div>
-        {spark && !hidden && <Spark points={spark} stroke="#30D158" className="mb-2 h-11 w-24 shrink-0" />}
+        {spark && !hidden && <Spark points={spark} stroke="#0B8A3A" className="mb-2 h-10 w-20 shrink-0" />}
       </div>
       <div className="relative mt-3 flex items-center gap-2 text-xs font-semibold">
         <span className={`rounded-full bg-accent-ink px-2.5 py-1 tabular ${up ? "text-up" : "text-down"}`}>

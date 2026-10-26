@@ -1,12 +1,12 @@
-// Renders the Aurum logo (graphite rounded square + white hexagon outline) to PNG
+// Renders the Aurum logo (ice-blue rounded square + dark hexagon outline) to PNG
 // at the sizes Chrome needs. Dependency-free: rasterises with supersampling and
 // encodes PNG with node:zlib. Run: node scripts/make-icons.mjs
 import { writeFileSync, mkdirSync } from "node:fs";
 import { deflateSync } from "node:zlib";
 
-const BG = [0x1d, 0x1d, 0x1f];
-// Solid white stroke (kept as a gradient table for easy re-theming).
-const STOPS = [[0, [0xff, 0xff, 0xff]], [1, [0xff, 0xff, 0xff]]];
+const BG = [0x7c, 0xc8, 0xff];
+// Solid dark stroke (kept as a gradient table for easy re-theming).
+const STOPS = [[0, [0x06, 0x12, 0x1c]], [1, [0x06, 0x12, 0x1c]]];
 function ice(t) {
   for (let i = 0; i < STOPS.length - 1; i++) {
     const [a, ca] = STOPS[i];
