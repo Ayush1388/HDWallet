@@ -63,7 +63,7 @@ export function Logo({ size = "h-9 w-9" }) {
 }
 
 const variants = {
-  primary: "bg-fg text-ink hover:bg-white",
+  primary: "bg-accent text-accent-ink hover:brightness-110",
   secondary: "glass text-fg hover:border-[rgba(226,236,255,.16)]",
   ghost: "text-muted hover:bg-white/5 hover:text-fg",
   danger: "border border-down/30 bg-down/10 text-down hover:bg-down/20",

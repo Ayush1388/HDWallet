@@ -10,7 +10,7 @@ import { detectChain, fmtAmount, fmtUsd, shorten, timeAgo, txUrl } from "../lib/
 import { COIN_BY_SYMBOL } from "../lib/market";
 import { isDemo } from "../lib/demo";
 import { useSparklines } from "../market/hooks";
-import { GlowLine } from "../market/parts";
+import { Spark } from "../market/parts";
 import { MarketList } from "../market/MarketList";
 import { CoinView } from "../market/CoinView";
 
@@ -58,47 +58,53 @@ function usePortfolioSpark(rows) {
   }, [rows, charted, sparks]);
 }
 
-function HeroCard({ network, totals, loading, hidden, spark, onToggleHidden, onNetwork }) {
+function HeroCard({ account, network, totals, loading, hidden, spark, onToggleHidden, onNetwork, onAccounts }) {
   const shown = useCountUp(totals.usd);
   const [whole, cents] = fmtUsd(shown).split(".");
   const up = totals.delta >= 0;
   return (
-    <section className="card relative overflow-hidden p-5" aria-label="Portfolio balance">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <button onClick={onToggleHidden} className="inline-flex min-h-[28px] items-center gap-2 text-[15px] font-medium text-muted" aria-pressed={hidden} aria-label={hidden ? "Show balances" : "Hide balances"}>
-            Total balance <Icon name={hidden ? "eyeOff" : "eye"} className="h-4 w-4 text-muted" />
-          </button>
-        </div>
+    <section className="relative overflow-hidden rounded-[28px] bg-accent p-5 text-accent-ink" aria-label="Portfolio balance">
+      <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-white/20 blur-2xl" />
+      <div className="relative flex items-center justify-between gap-2">
+        <button onClick={onAccounts} className="flex min-h-[40px] min-w-0 items-center gap-2.5 text-left" aria-label={`Account ${account.name}. Switch account`}>
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent-ink text-sm font-semibold text-accent">{account.name.slice(0, 1).toUpperCase()}</span>
+          <span className="min-w-0">
+            <span className="flex items-center gap-1 text-sm font-semibold">{account.name}<Icon name="chevron" className="h-3.5 w-3.5" strokeWidth={2.4} /></span>
+            <span className="block truncate font-mono text-[11px] text-accent-ink/65">{shorten(account.eth.address)}</span>
+          </span>
+        </button>
         <button
           onClick={() => onNetwork(network.id === "mainnet" ? "testnet" : "mainnet")}
-          className="inline-flex min-h-[32px] items-center gap-1.5 rounded-full border border-[rgba(226,236,255,.08)] px-3 text-xs font-medium text-muted transition hover:text-fg"
+          className="inline-flex min-h-[34px] items-center gap-1.5 rounded-full bg-accent-ink/10 px-3 text-xs font-semibold transition hover:bg-accent-ink/20"
           aria-label={`Network: ${network.label}. Switch network`}
         >
-          <span className={`h-1.5 w-1.5 rounded-full ${network.id === "mainnet" ? "bg-up" : "bg-amber-300"}`} />
+          <span className={`h-1.5 w-1.5 rounded-full ${network.id === "mainnet" ? "bg-accent-ink" : "bg-amber-600"}`} />
           {network.label}
         </button>
       </div>
 
-      {loading && totals.usd === 0 ? (
-        <div className="skeleton mt-5 h-10 w-48" />
-      ) : (
-        <p className="mt-5 truncate text-[40px] font-semibold leading-none tracking-tightest tabular" aria-live="polite">
-          {hidden ? MASK : <>{whole}<span className="text-muted">.{cents}</span></>}
-        </p>
-      )}
-
-      <div className="mt-5 flex items-end gap-4">
-        <div className="min-w-0 flex-1">
-          {spark && !hidden ? <GlowLine points={spark} className="h-20 w-full" /> : <div className="h-20 border-b border-dashed border-[rgba(226,236,255,.1)]" />}
+      <div className="relative mt-5 flex items-end justify-between gap-3">
+        <div className="min-w-0">
+          <button onClick={onToggleHidden} className="inline-flex min-h-[28px] items-center gap-1.5 text-xs font-medium text-accent-ink/70" aria-pressed={hidden} aria-label={hidden ? "Show balances" : "Hide balances"}>
+            Total balance <Icon name={hidden ? "eyeOff" : "eye"} className="h-3.5 w-3.5" />
+          </button>
+          {loading && totals.usd === 0 ? (
+            <div className="mt-1 h-10 w-44 animate-pulse rounded-lg bg-accent-ink/15" />
+          ) : (
+            <p className="truncate text-[36px] font-semibold leading-tight tracking-tightest tabular" aria-live="polite">
+              {hidden ? MASK : <>{whole}<span className="text-accent-ink/45">.{cents}</span></>}
+            </p>
+          )}
         </div>
-        <div className="shrink-0 border-l border-[rgba(226,236,255,.08)] pl-4">
-          <p className="text-xs text-muted">24h change</p>
-          <p className={`mt-1 text-sm tabular ${up ? "text-up" : "text-down"}`}>{hidden ? MASK : `${up ? "+" : "−"}${fmtUsd(Math.abs(totals.delta))}`}</p>
-          <p className={`text-xs tabular ${up ? "text-up/80" : "text-down/80"}`}>{hidden ? "" : `${up ? "+" : "−"}${Math.abs(totals.pct).toFixed(2)}%`}</p>
-        </div>
+        {spark && !hidden && <Spark points={spark} stroke="#06121C" className="mb-2 h-11 w-24 shrink-0" />}
       </div>
-      {network.id === "testnet" && !isDemo() && <p className="mt-3 text-xs text-muted">Testnet · assets have no market value</p>}
+      <div className="relative mt-3 flex items-center gap-2 text-xs font-semibold">
+        <span className="rounded-full bg-accent-ink px-2.5 py-1 text-accent tabular">
+          {hidden ? MASK : `${up ? "+" : "−"}${fmtUsd(Math.abs(totals.delta))} (${up ? "+" : "−"}${Math.abs(totals.pct).toFixed(2)}%)`}
+        </span>
+        <span className="text-accent-ink/70">Past 24 hours</span>
+      </div>
+      {network.id === "testnet" && !isDemo() && <p className="relative mt-2 text-[11px] font-medium text-accent-ink/70">Testnet assets have no market value</p>}
     </section>
   );
 }
@@ -110,14 +116,14 @@ function Tiles({ claimCount, onAction }) {
     { id: "earn", label: "Earn", icon: "stake", badge: claimCount },
   ];
   return (
-    <nav aria-label="Wallet actions" className="glass grid grid-cols-3 gap-1 rounded-[24px] p-1.5">
+    <nav aria-label="Wallet actions" className="grid grid-cols-3 gap-3">
       {tiles.map((t) => (
-        <button key={t.id} onClick={() => onAction(t.id)} className="relative flex min-h-[52px] items-center justify-center gap-2.5 rounded-[18px] text-sm font-semibold transition hover:bg-raised active:scale-[.97]">
-          <span className="grid h-9 w-9 place-items-center rounded-xl border border-[rgba(226,236,255,.08)] bg-raised">
-            <Icon name={t.icon} className="h-[18px] w-[18px]" strokeWidth={2} duo />
+        <button key={t.id} onClick={() => onAction(t.id)} className="glass relative flex min-h-[96px] flex-col items-center justify-center gap-2 rounded-3xl text-sm font-medium transition hover:border-accent/30 active:scale-[.97]">
+          <span className="grid h-11 w-11 place-items-center rounded-full border border-[rgba(226,236,255,.12)] bg-white/[.04]">
+            <Icon name={t.icon} className="h-5 w-5" />
           </span>
           {t.label}
-          {t.badge > 0 && <span className="absolute right-2 top-1.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-accent px-1 text-[10px] font-semibold text-accent-ink">{t.badge}</span>}
+          {t.badge > 0 && <span className="absolute right-3 top-3 grid h-5 min-w-[20px] place-items-center rounded-full bg-accent px-1 text-[10px] font-semibold text-accent-ink">{t.badge}</span>}
         </button>
       ))}
     </nav>
@@ -139,15 +145,15 @@ function Chips({ options, value, onChange, label }) {
 function HoldingRow({ row, network, hidden, onOpen }) {
   return (
     <li>
-      <button onClick={onOpen} className="flex w-full items-center gap-3 rounded-[20px] border border-[rgba(226,236,255,.05)] bg-raised/60 px-3 py-3 text-left transition hover:border-[rgba(226,236,255,.14)]">
+      <button onClick={onOpen} className="flex w-full items-center gap-3 rounded-2xl border border-[rgba(226,236,255,.05)] bg-white/[.03] px-3 py-2.5 text-left transition hover:border-[rgba(226,236,255,.14)]">
         <TokenIcon asset={row} size="h-10 w-10" />
         <span className="min-w-0 flex-1">
-          <span className="block truncate font-semibold">{row.name}</span>
-          <Change value={row.change} className="text-[11px]" />
+          <span className="block truncate font-semibold">{row.symbol} <span className="text-xs font-normal text-muted">{network[row.chain].name}</span></span>
+          <Change value={row.change} className="text-xs" />
         </span>
         <span className="text-right">
-          <span className="block font-medium tabular">{hidden ? MASK : row.price > 0 ? fmtUsd(row.usd) : "—"}</span>
-          <span className="block text-xs text-muted tabular">{hidden ? MASK : `${fmtAmount(row.balance)} ${row.symbol}`} · {network[row.chain].name}</span>
+          <span className="block font-semibold tabular">{hidden ? MASK : fmtAmount(row.balance)}</span>
+          <span className="block text-xs text-muted tabular">{hidden ? MASK : row.price > 0 ? fmtUsd(row.usd) : "—"}</span>
         </span>
       </button>
     </li>
@@ -167,7 +173,7 @@ function ActivityRow({ item, network, hidden }) {
   const pending = item.status === "pending";
   return (
     <li>
-      <a href={txUrl(item.chain, item.hash, network)} target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-[20px] border border-[rgba(226,236,255,.05)] bg-raised/60 px-3 py-3 transition hover:border-[rgba(226,236,255,.14)]">
+      <a href={txUrl(item.chain, item.hash, network)} target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-2xl border border-[rgba(226,236,255,.05)] bg-white/[.03] px-3 py-2.5 transition hover:border-[rgba(226,236,255,.14)]">
         <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-full ${failed ? "bg-down/10 text-down" : a.cls}`}>
           <Icon name={failed ? "fail" : pending ? "clock" : a.icon} className="h-[18px] w-[18px]" />
         </span>
@@ -190,7 +196,7 @@ function ActivityRow({ item, network, hidden }) {
 function SkeletonRows() {
   return (
     <ul className="space-y-2" aria-hidden="true">
-      {[0, 1, 2].map((i) => <li key={i} className="skeleton h-[66px] rounded-[20px]" />)}
+      {[0, 1, 2].map((i) => <li key={i} className="skeleton h-[62px] rounded-2xl" />)}
     </ul>
   );
 }
@@ -242,37 +248,27 @@ const NAV = [
 ];
 
 function BottomNav({ page, onNav }) {
-  // Fixed floating dock (not sticky) so it is always on screen, whatever the page length or scroll container.
+  // Fixed (not sticky) so it is always on screen regardless of page length or scroll container.
   return (
-    <nav aria-label="Main" className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pb-[max(.75rem,env(safe-area-inset-bottom))]">
-      <ul className="pointer-events-auto mx-auto flex max-w-[408px] items-center justify-between rounded-full border border-[rgba(226,236,255,.08)] bg-panel/90 p-1.5 shadow-dock backdrop-blur-xl">
-        {NAV.map((n) => {
-          const active = page === n.id;
-          if (n.center) {
-            return (
-              <li key={n.id}>
-                <button onClick={() => onNav(n.id)} aria-label={n.label} title={n.label} className="grid h-12 w-12 place-items-center rounded-full bg-fg text-ink transition hover:bg-white active:scale-95">
-                  <Icon name={n.icon} className="h-5 w-5" strokeWidth={2.2} />
+    <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-30">
+      <div className="mx-auto max-w-[440px] border-t border-[rgba(226,236,255,.07)] bg-ink/95 px-2 pb-[max(.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl">
+        <ul className="grid grid-cols-5 items-end">
+          {NAV.map((n) => (
+            <li key={n.id} className="flex justify-center">
+              {n.center ? (
+                <button onClick={() => onNav(n.id)} aria-label={n.label} className="-mt-5 grid h-14 w-14 place-items-center rounded-full border-2 border-accent bg-ink text-accent shadow-glow transition active:scale-95">
+                  <Icon name={n.icon} className="h-6 w-6" strokeWidth={2} />
                 </button>
-              </li>
-            );
-          }
-          return (
-            <li key={n.id}>
-              <button
-                onClick={() => onNav(n.id)}
-                aria-label={n.label}
-                title={n.label}
-                aria-current={active ? "page" : undefined}
-                className={`flex h-12 items-center gap-2 rounded-full transition ${active ? "bg-raised px-4 text-accent" : "w-12 justify-center text-muted hover:text-fg"}`}
-              >
-                <Icon name={n.icon} className="h-5 w-5" />
-                {active && <span className="text-sm font-medium text-fg">{n.label}</span>}
-              </button>
+              ) : (
+                <button onClick={() => onNav(n.id)} aria-current={page === n.id ? "page" : undefined} className={`flex min-h-[48px] min-w-[56px] flex-col items-center justify-center gap-1 text-[11px] font-medium transition ${page === n.id ? "text-accent" : "text-muted hover:text-fg"}`}>
+                  <Icon name={n.icon} className="h-5 w-5" />
+                  {n.label}
+                </button>
+              )}
             </li>
-          );
-        })}
-      </ul>
+          ))}
+        </ul>
+      </div>
     </nav>
   );
 }
@@ -375,17 +371,14 @@ export default function Dashboard({
         {page === "markets" && coin ? (
           <button onClick={() => setCoin(null)} className="icon-btn" aria-label="Back to markets"><Icon name="back" className="h-5 w-5" /></button>
         ) : (
-          <button onClick={() => setModal({ type: "accounts" })} className="pill min-h-[44px] min-w-0 py-1.5 pl-1.5 pr-3" aria-label={`Account ${account.name}. Switch account`}>
-            <Logo size="h-8 w-8" />
-            <span className="min-w-0 text-left">
-              <span className="block truncate text-sm font-semibold leading-tight">{account.name}</span>
-              <span className="block font-mono text-[10px] text-muted">{shorten(account.eth.address)}</span>
-            </span>
-            <Icon name="chevron" className="h-3.5 w-3.5 text-muted" />
+          <button onClick={() => setModal({ type: "accounts" })} className="flex min-h-[44px] items-center gap-2.5" aria-label={`Account ${account.name}. Switch account`}>
+            <Logo size="h-11 w-11" />
+            <span className="text-lg font-semibold tracking-tight">{{ home: "Wallet", markets: "Markets", activity: "Activity" }[page]}</span>
           </button>
         )}
         <div className="flex items-center gap-2">
           <button className="icon-btn" aria-label="Scan QR code" onClick={() => setModal({ type: "scan" })}><Icon name="scan" className="h-5 w-5" /></button>
+          <button className="icon-btn" aria-label="Settings" onClick={() => setModal({ type: "settings" })}><Icon name="settings" className="h-5 w-5" /></button>
           <button
             className="icon-btn relative"
             aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`}
@@ -403,6 +396,8 @@ export default function Dashboard({
         {page === "home" && (
           <div key={key} className="space-y-4 animate-rise">
             <HeroCard
+              account={account}
+              onAccounts={() => setModal({ type: "accounts" })}
               network={network}
               totals={totals}
               loading={loading}
@@ -453,7 +448,7 @@ export default function Dashboard({
                 actions={
                   coinHolding && (
                     <div className="grid grid-cols-2 gap-3">
-                      <button onClick={() => setModal({ type: "send", assetId: coinHolding.id })} className="min-h-[46px] rounded-2xl bg-fg text-sm font-bold text-ink transition hover:bg-white">Send {coinHolding.symbol}</button>
+                      <button onClick={() => setModal({ type: "send", assetId: coinHolding.id })} className="min-h-[46px] rounded-2xl bg-accent text-sm font-semibold text-accent-ink transition hover:brightness-110">Send {coinHolding.symbol}</button>
                       <button onClick={() => setModal({ type: "receive", chain: coinHolding.chain })} className="glass min-h-[46px] rounded-2xl text-sm font-bold transition hover:border-[rgba(226,236,255,.16)]">Receive</button>
                     </div>
                   )
@@ -461,7 +456,6 @@ export default function Dashboard({
               />
             ) : (
               <>
-                <h1 className="mb-4 text-[28px] font-semibold tracking-tightest">Markets</h1>
                 <MarketList onOpen={(s) => { setCoin(s); window.scrollTo(0, 0); }} />
               </>
             )}
@@ -470,7 +464,6 @@ export default function Dashboard({
 
         {page === "activity" && (
           <div className="space-y-3 animate-rise">
-            <h1 className="text-[28px] font-semibold tracking-tightest">Activity</h1>
             <Chips label="Chain" value={chain} onChange={setChain} options={[["all", "All"], ["eth", network.eth.name], ["sol", network.sol.name]]} />
             <ActivityList activity={activity} chain={chain} network={network} hidden={hidden} />
           </div>

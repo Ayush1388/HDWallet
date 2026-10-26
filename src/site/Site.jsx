@@ -5,7 +5,7 @@ import { COIN_BY_SYMBOL, fmtPrice } from "../lib/market";
 import { MarketTable } from "../market/MarketList";
 import { sortTickers } from "../market/sort";
 import { useSparklines, useTickers } from "../market/hooks";
-import { CoinIcon, GlowLine, Pct } from "../market/parts";
+import { CoinIcon, Pct, Spark } from "../market/parts";
 
 const CoinView = lazy(() => import("../market/CoinView").then((m) => ({ default: m.CoinView })));
 const WalletApp = lazy(() => import("../wallet/WalletApp"));
@@ -37,7 +37,7 @@ function Header({ path }) {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <a href="#/download" className="hidden min-h-[40px] items-center gap-2 rounded-full bg-fg px-4 text-sm font-bold text-ink transition hover:bg-white sm:inline-flex">
+          <a href="#/download" className="hidden min-h-[40px] items-center gap-2 rounded-full bg-accent px-4 text-sm font-semibold text-accent-ink transition hover:brightness-110 sm:inline-flex">
             <Icon name="down" className="h-4 w-4" strokeWidth={2.4} /> Add to Chrome
           </a>
           <button className="icon-btn md:hidden" aria-label="Menu" aria-expanded={open} onClick={() => setOpen(!open)}>
@@ -76,30 +76,29 @@ function PhonePreview() {
   return (
     <div className="relative mx-auto w-[300px] rounded-[44px] border border-white/10 bg-ink p-3 shadow-[0_40px_120px_-40px_rgba(124,200,255,.35)]">
       <div className="mx-auto mb-3 h-6 w-28 rounded-full bg-raised" />
-      <div className="rounded-[26px] border border-[rgba(226,236,255,.08)] bg-panel p-4">
-        <div className="flex items-center justify-between">
-          <span className="flex items-center gap-2 text-sm font-semibold"><CoinIcon symbol="BTC" size="h-8 w-8" /> Bitcoin</span>
-          <span className="rounded-full border border-[rgba(226,236,255,.08)] px-2.5 py-1 text-[11px] font-medium text-muted">BTC/USDT</span>
+      <div className="relative overflow-hidden rounded-[26px] bg-accent p-4 text-accent-ink">
+        <div className="pointer-events-none absolute -right-10 -top-12 h-32 w-32 rounded-full bg-white/20 blur-2xl" />
+        <div className="relative flex items-center justify-between">
+          <span className="flex items-center gap-2 text-sm font-semibold"><CoinIcon symbol="BTC" size="h-8 w-8" /> BTC</span>
+          <span className="rounded-full bg-accent-ink/10 px-2.5 py-1 text-[10px] font-semibold">Top crypto</span>
         </div>
-        <p className="mt-4 text-[28px] font-semibold leading-none tracking-tightest tabular">${fmtPrice(btc?.price)}</p>
-        <div className="mt-3 flex items-end gap-3">
-          <GlowLine points={sparks.BTCUSDT} className="h-14 min-w-0 flex-1" />
-          <div className="shrink-0 text-right">
-            <p className="text-[10px] text-muted">24h</p>
-            <Pct value={btc?.change} className="text-xs" />
-          </div>
+        <p className="relative mt-4 text-[11px] font-medium text-accent-ink/70">Bitcoin · 24h</p>
+        <div className="relative flex items-end justify-between gap-2">
+          <p className="text-3xl font-semibold tracking-tightest tabular">{btc ? `${btc.change >= 0 ? "+" : ""}${btc.change.toFixed(2)}%` : "—"}</p>
+          <Spark points={sparks.BTCUSDT} stroke="#06121C" className="h-10 w-24" />
         </div>
+        <p className="relative mt-1 text-xs font-semibold tabular">${fmtPrice(btc?.price)}</p>
       </div>
       <div className="mt-3 grid grid-cols-3 gap-2">
         {[["up", "Send"], ["down", "Receive"], ["stake", "Earn"]].map(([i, l]) => (
           <div key={l} className="flex flex-col items-center gap-1.5 rounded-2xl border border-[rgba(226,236,255,.08)] bg-panel py-3 text-[11px] font-semibold">
-            <span className="grid h-8 w-8 place-items-center rounded-xl border border-[rgba(226,236,255,.08)] bg-raised"><Icon name={i} className="h-4 w-4" strokeWidth={2} duo /></span>{l}
+            <span className="grid h-8 w-8 place-items-center rounded-full border border-[rgba(226,236,255,.12)]"><Icon name={i} className="h-4 w-4" /></span>{l}
           </div>
         ))}
       </div>
       <div className="mt-3 rounded-2xl border border-[rgba(226,236,255,.08)] bg-panel p-2.5">
         <div className="mb-2 flex gap-1.5 text-[10px] font-semibold">
-          <span className="rounded-full border border-[rgba(226,236,255,.16)] bg-raised px-2 py-1 text-fg">Trending</span>
+          <span className="rounded-full border border-accent/60 bg-accent/10 px-2 py-1 text-accent">Trending</span>
           <span className="rounded-full border border-white/10 px-2 py-1 text-muted">Gainers</span>
           <span className="rounded-full border border-white/10 px-2 py-1 text-muted">Volume</span>
         </div>
@@ -139,7 +138,7 @@ function Landing() {
             </h1>
             <p className="mt-5 max-w-lg text-lg text-muted">Hold, send and stake across Ethereum and Solana, and track every market with live pro-grade charts. Your keys never leave your device.</p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href="#/download" className="inline-flex min-h-[52px] items-center gap-2 rounded-2xl bg-fg px-6 font-bold text-ink transition hover:bg-white">
+              <a href="#/download" className="inline-flex min-h-[52px] items-center gap-2 rounded-2xl bg-accent px-6 font-semibold text-accent-ink shadow-glow transition hover:brightness-110">
                 <Icon name="down" className="h-5 w-5" strokeWidth={2.4} /> Download extension
               </a>
               <a href="#preview" onClick={(e) => { e.preventDefault(); document.getElementById("preview")?.scrollIntoView({ behavior: "smooth" }); }} className="inline-flex min-h-[52px] items-center gap-2 rounded-2xl border border-[rgba(226,236,255,.08)] bg-panel px-6 font-bold transition hover:border-[rgba(226,236,255,.2)]">
@@ -249,7 +248,7 @@ function DownloadSection() {
           <div>
             <h2 className="text-4xl font-semibold tracking-tight">Install Aurum</h2>
             <p className="mt-3 max-w-md text-muted">Works in Chrome, Edge, Brave, Arc and other Chromium browsers. Free and open source.</p>
-            <a href={EXTENSION_ZIP} download className="mt-7 inline-flex min-h-[56px] items-center gap-2.5 rounded-2xl bg-fg px-7 text-lg font-bold text-ink transition hover:bg-white">
+            <a href={EXTENSION_ZIP} download className="mt-7 inline-flex min-h-[56px] items-center gap-2.5 rounded-2xl bg-accent px-7 text-lg font-semibold text-accent-ink shadow-glow transition hover:brightness-110">
               <Icon name="down" className="h-5 w-5" strokeWidth={2.4} /> Download for Chrome
             </a>
             <p className="mt-3 text-xs text-muted">Version 1.0.0 · Manifest V3 · 650 KB</p>
