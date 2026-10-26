@@ -84,8 +84,8 @@ export function AccountsSheet({ accounts, activeIndex, network, onNetwork, onSel
         {accounts.map((a) => {
           const active = a.index === activeIndex;
           return (
-            <li key={a.index} className={`flex items-center gap-3 rounded-2xl border p-3 transition ${active ? "border-[rgba(255,253,248,.22)] bg-raised" : "border-white/[.06] bg-ink/40 hover:border-white/15"}`}>
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[rgba(255,253,248,.1)] bg-raised text-sm font-semibold">
+            <li key={a.index} className={`flex items-center gap-3 rounded-2xl border p-3 transition ${active ? "border-[rgba(255,255,255,.22)] bg-raised" : "border-white/[.06] bg-ink/40 hover:border-white/15"}`}>
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[rgba(255,255,255,.1)] bg-raised text-sm font-semibold">
                 {a.name.slice(0, 1).toUpperCase()}
               </span>
               {editing === a.index ? (
@@ -128,7 +128,7 @@ export function NotificationsSheet({ items, onClear, onClose }) {
           <ul className="space-y-2">
             {items.map((n) => (
               <li key={n.id} className="flex gap-3 rounded-2xl border border-white/[.06] bg-ink/40 p-3">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[rgba(255,253,248,.08)] bg-raised"><Icon name={NOTE_ICON[n.kind] ?? "bell"} duo /></span>
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[rgba(255,255,255,.08)] bg-raised"><Icon name={NOTE_ICON[n.kind] ?? "bell"} duo /></span>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold">{n.title}</p>
                   {n.body && <p className="truncate text-xs text-muted">{n.body}</p>}

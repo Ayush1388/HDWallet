@@ -57,7 +57,7 @@ export function Logo({ size = "h-9 w-9" }) {
   return (
     <span className={`${size} grid shrink-0 place-items-center rounded-[30%] bg-accent`}>
       <svg viewBox="0 0 24 24" className="h-3/5 w-3/5" fill="none" strokeWidth="2.6" strokeLinejoin="round" aria-hidden="true">
-        <path d={paths.hex} stroke="#3C315B" />
+        <path d={paths.hex} stroke="#03140A" />
       </svg>
     </span>
   );
@@ -65,7 +65,7 @@ export function Logo({ size = "h-9 w-9" }) {
 
 const variants = {
   primary: "rounded-full bg-accent text-accent-ink hover:bg-accent-soft",
-  secondary: "glass text-fg hover:border-[rgba(255,253,248,.16)]",
+  secondary: "glass text-fg hover:border-[rgba(255,255,255,.16)]",
   ghost: "text-muted hover:bg-white/5 hover:text-fg",
   danger: "border border-down/30 bg-down/10 text-down hover:bg-down/20",
 };
@@ -157,7 +157,7 @@ export function Notice({ tone = "warn", children }) {
   const tones = {
     warn: "border-amber-400/25 bg-amber-400/10 text-amber-100",
     danger: "border-down/30 bg-down/10 text-rose-100",
-    info: "border-[rgba(255,253,248,.08)] bg-raised text-fg/85",
+    info: "border-[rgba(255,255,255,.08)] bg-raised text-fg/85",
   };
   return (
     <div className={`flex gap-3 rounded-2xl border p-3 text-sm leading-relaxed ${tones[tone]}`}>

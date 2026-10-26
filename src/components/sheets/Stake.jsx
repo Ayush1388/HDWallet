@@ -100,7 +100,7 @@ export function StakeSheet({ account, network, sol, stakes, stakesLoading, stake
                       role="radio"
                       aria-checked={vote === v.vote}
                       onClick={() => setVote(v.vote)}
-                      className={`flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition ${vote === v.vote ? "border-[rgba(255,253,248,.22)] bg-raised" : "border-white/[.06] bg-ink/40 hover:border-white/15"}`}
+                      className={`flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left transition ${vote === v.vote ? "border-[rgba(255,255,255,.22)] bg-raised" : "border-white/[.06] bg-ink/40 hover:border-white/15"}`}
                     >
                       <span>
                         <span className="block font-mono text-sm">{shorten(v.vote, 8)}</span>
@@ -135,7 +135,7 @@ export function StakeSheet({ account, network, sol, stakes, stakesLoading, stake
       {tab === "positions" && (
         <div className="space-y-3">
           {claimable.length > 0 && (
-            <div className="flex items-center justify-between gap-3 rounded-2xl border border-[rgba(255,253,248,.12)] bg-raised p-4">
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-[rgba(255,255,255,.12)] bg-raised p-4">
               <div>
                 <p className="text-sm font-bold">{fmtAmount(claimableSol)} SOL ready to claim</p>
                 <p className="text-xs text-muted">From {claimable.length} inactive stake account{claimable.length > 1 ? "s" : ""}</p>

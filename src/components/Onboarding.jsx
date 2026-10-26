@@ -37,7 +37,7 @@ export function Welcome({ onCreate, onImport }) {
       <div className="grid gap-3 sm:grid-cols-3">
         {features.map((f) => (
           <div key={f.title} className="card rounded-3xl p-4">
-            <span className="mb-3 grid h-9 w-9 place-items-center rounded-xl border border-[rgba(255,253,248,.08)] bg-raised">
+            <span className="mb-3 grid h-9 w-9 place-items-center rounded-xl border border-[rgba(255,255,255,.08)] bg-raised">
               <Icon name={f.icon} strokeWidth={2} duo />
             </span>
             <h3 className="text-sm font-semibold">{f.title}</h3>
