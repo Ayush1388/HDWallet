@@ -1,11 +1,11 @@
-// Renders the Aurora logo (green rounded square + dark hexagon outline) to PNG
+// Renders the Aurum logo (gold rounded square + navy hexagon outline) to PNG
 // at the sizes Chrome needs. Dependency-free: rasterises with supersampling and
 // encodes PNG with node:zlib. Run: node scripts/make-icons.mjs
 import { writeFileSync, mkdirSync } from "node:fs";
 import { deflateSync } from "node:zlib";
 
-const GREEN = [0x3c, 0xf2, 0x7a];
-const INK = [0x05, 0x05, 0x06];
+const GOLD = [0xf5, 0x9e, 0x0b];
+const INK = [0x0f, 0x17, 0x2a];
 
 function crc32(buf) {
   let c, crc = 0xffffffff;
@@ -69,7 +69,7 @@ function render(size) {
     const n = ss * ss;
     const cover = (bg + ink) / n;
     if (!cover) return [0, 0, 0, 0];
-    const mix = (c) => Math.round((GREEN[c] * bg + INK[c] * ink) / (bg + ink));
+    const mix = (c) => Math.round((GOLD[c] * bg + INK[c] * ink) / (bg + ink));
     return [mix(0), mix(1), mix(2), Math.round(cover * 255)];
   });
 }

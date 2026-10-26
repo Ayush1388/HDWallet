@@ -182,7 +182,7 @@ export function ReceiveSheet({ account, network, initialChain = "eth", onClose }
       <Segmented label="Chain" value={chain} onChange={setChain} className="mb-5 flex w-full" options={[{ value: "eth", label: network.eth.name }, { value: "sol", label: network.sol.name }]} />
       <div className="flex flex-col items-center">
         <div className="rounded-[28px] bg-white p-4 shadow-xl shadow-accent/10">
-          <QRCodeSVG value={address} size={188} level="M" fgColor="#050506" />
+          <QRCodeSVG value={address} size={188} level="M" fgColor="#0A0F1C" />
         </div>
         <p className="mt-4 text-sm font-semibold">{account.name}</p>
         <p className="mt-2 w-full break-all rounded-2xl border border-white/[.06] bg-ink/50 p-3 text-center font-mono text-xs leading-relaxed">{address}</p>

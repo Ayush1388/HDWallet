@@ -4,12 +4,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#050506",
-        panel: "#111113",
-        raised: "#1a1a1d",
-        line: "#26262b",
-        muted: "#8d9099",
-        accent: { DEFAULT: "#3cf27a", soft: "#8ff7b4", deep: "#14b85a", ink: "#03140a" },
+        ink: "#0A0F1C",
+        panel: "#111827",
+        raised: "#1A2335",
+        line: "#283349",
+        muted: "#94A3B8",
+        accent: { DEFAULT: "#F59E0B", soft: "#FCD34D", deep: "#B45309", ink: "#0F172A" },
         up: "#2ee07c",
         down: "#f6465d",
         eth: "#7d93f0",
@@ -22,7 +22,7 @@ export default {
       boxShadow: {
         glass: "inset 0 1px 0 0 rgba(255,255,255,.04)",
         pill: "inset 0 1px 0 0 rgba(255,255,255,.05)",
-        glow: "0 0 0 1px rgba(60,242,122,.35), 0 10px 30px -8px rgba(60,242,122,.45)",
+        glow: "0 0 0 1px rgba(245,158,11,.35), 0 12px 32px -10px rgba(245,158,11,.45)",
       },
       keyframes: {
         rise: { "0%": { opacity: 0, transform: "translateY(10px)" }, "100%": { opacity: 1, transform: "none" } },

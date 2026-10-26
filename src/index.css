@@ -5,10 +5,12 @@
 @layer base {
   html { color-scheme: dark; -webkit-tap-highlight-color: transparent; }
   body {
-    @apply m-0 min-h-[100dvh] bg-ink font-sans text-zinc-50 antialiased;
+    @apply m-0 min-h-[100dvh] bg-ink font-sans text-slate-50 antialiased;
+    background-image: radial-gradient(900px 480px at 50% -10%, rgba(245,158,11,.07), transparent 65%);
+    background-attachment: fixed;
     font-feature-settings: "cv11", "ss01";
   }
-  ::selection { background: rgba(60,242,122,.3); }
+  ::selection { background: rgba(245,158,11,.3); }
   :focus-visible { @apply outline-none ring-2 ring-accent/70 ring-offset-2 ring-offset-ink; }
   button, a, [role="button"] { cursor: pointer; }
 }
@@ -24,7 +26,7 @@
       hover:border-accent/40 hover:text-white active:scale-95;
   }
   .input {
-    @apply w-full rounded-2xl border border-line bg-black/60 px-4 py-3 text-[15px] text-zinc-50
+    @apply w-full rounded-2xl border border-line bg-ink/70 px-4 py-3 text-[15px] text-zinc-50
       placeholder:text-muted/60 transition focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/20;
   }
   .label { @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted; }

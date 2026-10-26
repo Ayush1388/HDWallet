@@ -63,7 +63,7 @@ function HeroCard({ account, network, totals, loading, hidden, spark, onToggleHi
   const [whole, cents] = fmtUsd(shown).split(".");
   const up = totals.delta >= 0;
   return (
-    <section className="relative overflow-hidden rounded-[28px] bg-accent p-5 text-accent-ink shadow-glow" aria-label="Portfolio balance">
+    <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-accent-soft via-accent to-[#E07B06] p-5 text-accent-ink shadow-glow" aria-label="Portfolio balance">
       <div className="pointer-events-none absolute -right-10 -top-16 h-44 w-44 rounded-full bg-white/25 blur-2xl" />
       <div className="relative flex items-center justify-between gap-2">
         <button onClick={onAccounts} className="flex min-h-[40px] min-w-0 items-center gap-2.5 rounded-full text-left" aria-label={`Account ${account.name}. Switch account`}>
@@ -96,7 +96,7 @@ function HeroCard({ account, network, totals, loading, hidden, spark, onToggleHi
             </p>
           )}
         </div>
-        {spark && !hidden && <Spark points={spark} stroke="#03140a" className="mb-2 h-10 w-20 shrink-0 sm:w-28" />}
+        {spark && !hidden && <Spark points={spark} stroke="#0F172A" className="mb-2 h-10 w-20 shrink-0 sm:w-28" />}
       </div>
       <div className="relative mt-3 flex items-center gap-2 text-xs font-bold">
         <span className="rounded-full bg-accent-ink px-2.5 py-1 text-accent tabular">

@@ -1,4 +1,4 @@
-# Aurora — Ethereum & Solana wallet extension
+# Aurum — Ethereum & Solana wallet extension
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-blue)](https://hd-wallet-yoet.vercel.app/)
 
@@ -45,7 +45,7 @@ npm run lint
 2. Open `chrome://extensions`, enable **Developer mode**
 3. **Load unpacked** → select the `dist-extension` folder
 
-The website's **Download** button serves the same build as a zip (`downloads/aurora-wallet-extension.zip`).
+The website's **Download** button serves the same build as a zip (`downloads/aurum-wallet-extension.zip`).
 
 ### RPC configuration
 Free public Solana **mainnet** RPCs block token and stake-account lookups. For SPL tokens and staking on

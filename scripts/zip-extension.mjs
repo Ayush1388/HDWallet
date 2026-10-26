@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync } from "node:fs";
 
 const SRC = "dist-extension";
 const OUT_DIR = "public/downloads";
-const OUT = `${OUT_DIR}/aurora-wallet-extension.zip`;
+const OUT = `${OUT_DIR}/aurum-wallet-extension.zip`;
 
 if (!existsSync(`${SRC}/manifest.json`)) {
   console.error(`${SRC}/manifest.json missing — run "vite build --mode extension" first.`);
@@ -14,6 +14,6 @@ if (!existsSync(`${SRC}/manifest.json`)) {
 const { version } = JSON.parse(readFileSync(`${SRC}/manifest.json`, "utf8"));
 mkdirSync(OUT_DIR, { recursive: true });
 const zip = new AdmZip();
-zip.addLocalFolder(SRC, "aurora-wallet");
+zip.addLocalFolder(SRC, "aurum-wallet");
 zip.writeZip(OUT);
-console.log(`Packed Aurora Wallet v${version} -> ${OUT}`);
+console.log(`Packed Aurum Wallet v${version} -> ${OUT}`);

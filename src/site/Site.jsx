@@ -10,7 +10,7 @@ import { CoinIcon, Pct, Spark } from "../market/parts";
 const CoinView = lazy(() => import("../market/CoinView").then((m) => ({ default: m.CoinView })));
 const WalletApp = lazy(() => import("../wallet/WalletApp"));
 
-export const EXTENSION_ZIP = "downloads/aurora-wallet-extension.zip";
+export const EXTENSION_ZIP = "downloads/aurum-wallet-extension.zip";
 
 const Loading = () => <div className="grid min-h-[50vh] place-items-center text-muted"><Spinner className="h-6 w-6" /></div>;
 
@@ -25,9 +25,9 @@ function Header({ path }) {
   return (
     <header className="sticky top-0 z-40 border-b border-white/[.06] bg-ink/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <a href="#/" className="flex items-center gap-2.5" aria-label="Aurora home">
+        <a href="#/" className="flex items-center gap-2.5" aria-label="Aurum home">
           <Logo size="h-8 w-8" />
-          <span className="text-lg font-extrabold tracking-tight">Aurora</span>
+          <span className="text-lg font-extrabold tracking-tight">Aurum</span>
         </a>
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
           {links.map(([href, label]) => (
@@ -60,7 +60,7 @@ function Footer() {
   return (
     <footer className="mt-24 border-t border-white/[.06]">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <div className="flex items-center gap-2.5"><Logo size="h-7 w-7" /> <span className="font-bold text-zinc-200">Aurora</span> · Non-custodial wallet for Ethereum & Solana</div>
+        <div className="flex items-center gap-2.5"><Logo size="h-7 w-7" /> <span className="font-bold text-zinc-200">Aurum</span> · Non-custodial wallet for Ethereum & Solana</div>
         <p>Market data: Binance · Charts: TradingView Lightweight Charts™ · Not financial advice.</p>
       </div>
     </footer>
@@ -74,9 +74,9 @@ function PhonePreview() {
   const trending = useMemo(() => sortTickers(tickers, "trending").slice(0, 3), [tickers]);
   const sparks = useSparklines(["BTCUSDT"]);
   return (
-    <div className="relative mx-auto w-[300px] rounded-[44px] border border-white/10 bg-black p-3 shadow-[0_40px_120px_-30px_rgba(60,242,122,.35)]">
-      <div className="mx-auto mb-3 h-6 w-28 rounded-full bg-zinc-900" />
-      <div className="rounded-[26px] bg-accent p-4 text-accent-ink">
+    <div className="relative mx-auto w-[300px] rounded-[44px] border border-white/10 bg-ink p-3 shadow-[0_40px_120px_-30px_rgba(245,158,11,.3)]">
+      <div className="mx-auto mb-3 h-6 w-28 rounded-full bg-slate-800" />
+      <div className="rounded-[26px] bg-gradient-to-br from-accent-soft via-accent to-[#E07B06] p-4 text-accent-ink">
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-2 text-sm font-extrabold"><CoinIcon symbol="BTC" size="h-8 w-8" /> BTC</span>
           <span className="rounded-full bg-accent-ink/10 px-2.5 py-1 text-[10px] font-bold">Top crypto</span>
@@ -84,7 +84,7 @@ function PhonePreview() {
         <p className="mt-4 text-[11px] font-semibold text-accent-ink/70">Bitcoin · 24h</p>
         <div className="flex items-end justify-between gap-2">
           <p className="text-3xl font-extrabold tabular">{btc ? `${btc.change >= 0 ? "+" : ""}${btc.change.toFixed(2)}%` : "—"}</p>
-          <Spark points={sparks.BTCUSDT} stroke="#03140a" className="h-10 w-24" />
+          <Spark points={sparks.BTCUSDT} stroke="#0F172A" className="h-10 w-24" />
         </div>
         <p className="mt-1 text-xs font-bold tabular">${fmtPrice(btc?.price)}</p>
       </div>
@@ -203,7 +203,7 @@ function ExtensionPreview() {
           </span>
           <h2 className="mt-5 text-4xl font-extrabold tracking-tight">This is the extension.<br />Go ahead, tap around.</h2>
           <p className="mt-3 max-w-lg text-muted">
-            The window on the right is the actual Aurora popup running in demo mode with sample balances. Markets and charts are live; sending and staking are disabled.
+            The window on the right is the actual Aurum popup running in demo mode with sample balances. Markets and charts are live; sending and staking are disabled.
           </p>
           <ul className="mt-7 grid gap-3 sm:grid-cols-2">
             {points.map(([icon, title, text]) => (
@@ -219,12 +219,12 @@ function ExtensionPreview() {
         </div>
         <div className="mx-auto">
           {/* Browser-toolbar chrome so it reads as an extension popup. */}
-          <div className="w-[392px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-white/10 bg-[#1c1c1f] shadow-[0_40px_120px_-30px_rgba(60,242,122,.35)]">
+          <div className="w-[392px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-white/10 bg-[#151D2E] shadow-[0_40px_120px_-30px_rgba(245,158,11,.3)]">
             <div className="flex items-center gap-2 border-b border-white/[.06] px-3 py-2">
               <span className="flex gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-white/15" /><i className="h-2.5 w-2.5 rounded-full bg-white/15" /><i className="h-2.5 w-2.5 rounded-full bg-white/15" /></span>
-              <span className="ml-auto flex items-center gap-1.5 rounded-md bg-white/[.06] px-2 py-1 text-[11px] font-semibold text-zinc-300"><Logo size="h-4 w-4" /> Aurora Wallet</span>
+              <span className="ml-auto flex items-center gap-1.5 rounded-md bg-white/[.06] px-2 py-1 text-[11px] font-semibold text-zinc-300"><Logo size="h-4 w-4" /> Aurum Wallet</span>
             </div>
-            <iframe title="Aurora extension live demo" src={DEMO_URL} loading="lazy" className="block h-[600px] w-full bg-ink" />
+            <iframe title="Aurum extension live demo" src={DEMO_URL} loading="lazy" className="block h-[600px] w-full bg-ink" />
           </div>
         </div>
       </div>
@@ -237,14 +237,14 @@ function DownloadSection() {
     ["Download", "Get the extension package below and unzip it."],
     ["Open extensions", <>Go to <code className="rounded bg-white/10 px-1.5 py-0.5 text-xs">chrome://extensions</code> (or <code className="rounded bg-white/10 px-1.5 py-0.5 text-xs">edge://extensions</code>, <code className="rounded bg-white/10 px-1.5 py-0.5 text-xs">brave://extensions</code>).</>],
     ["Developer mode", "Switch on “Developer mode” in the top-right corner."],
-    ["Load unpacked", "Click “Load unpacked”, pick the unzipped folder, then pin Aurora to your toolbar."],
+    ["Load unpacked", "Click “Load unpacked”, pick the unzipped folder, then pin Aurum to your toolbar."],
   ];
   return (
     <section id="download" className="mx-auto mt-24 max-w-7xl scroll-mt-24 px-4 sm:px-6">
       <div className="relative overflow-hidden rounded-[32px] border border-accent/20 bg-gradient-to-br from-accent/[.12] via-panel to-panel p-8 sm:p-12">
         <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
           <div>
-            <h2 className="text-4xl font-extrabold tracking-tight">Install Aurora</h2>
+            <h2 className="text-4xl font-extrabold tracking-tight">Install Aurum</h2>
             <p className="mt-3 max-w-md text-muted">Works in Chrome, Edge, Brave, Arc and other Chromium browsers. Free and open source.</p>
             <a href={EXTENSION_ZIP} download className="mt-7 inline-flex min-h-[56px] items-center gap-2.5 rounded-2xl bg-accent px-7 text-lg font-bold text-accent-ink shadow-glow transition hover:brightness-110">
               <Icon name="down" className="h-5 w-5" strokeWidth={2.4} /> Download for Chrome
@@ -253,7 +253,7 @@ function DownloadSection() {
           </div>
           <ol className="space-y-3">
             {steps.map(([title, text], i) => (
-              <li key={title} className="flex gap-4 rounded-2xl border border-white/[.06] bg-black/30 p-4">
+              <li key={title} className="flex gap-4 rounded-2xl border border-white/[.06] bg-ink/50 p-4">
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent font-extrabold text-accent-ink">{i + 1}</span>
                 <div><p className="font-bold">{title}</p><p className="mt-0.5 text-sm text-muted">{text}</p></div>
               </li>
@@ -288,9 +288,9 @@ function MarketsPage() {
 function CoinPage({ symbol }) {
   const sym = symbol.toUpperCase();
   useEffect(() => {
-    document.title = `${sym}/USDT · Aurora`;
+    document.title = `${sym}/USDT · Aurum`;
     return () => {
-      document.title = "Aurora Wallet";
+      document.title = "Aurum Wallet";
     };
   }, [sym]);
   return (

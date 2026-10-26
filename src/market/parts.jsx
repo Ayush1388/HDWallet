@@ -5,7 +5,7 @@ export function CoinIcon({ symbol, size = "h-9 w-9" }) {
   const [failed, setFailed] = useState(false);
   if (failed) {
     return (
-      <span className={`${size} grid shrink-0 place-items-center rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 text-[10px] font-extrabold text-zinc-100 ring-1 ring-white/10`} aria-hidden="true">
+      <span className={`${size} grid shrink-0 place-items-center rounded-full bg-gradient-to-br from-slate-600 to-slate-800 text-[10px] font-extrabold text-zinc-100 ring-1 ring-white/10`} aria-hidden="true">
         {symbol.slice(0, 3)}
       </span>
     );

@@ -32,8 +32,8 @@ export function PriceChart({ pair, interval = "1h", type = "candles", height = 4
       timeScale: { borderColor: "rgba(255,255,255,.08)", timeVisible: interval !== "1d" && interval !== "1w", secondsVisible: false, rightOffset: 4 },
       crosshair: {
         mode: CrosshairMode.Normal,
-        vertLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#26262b" },
-        horzLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#26262b" },
+        vertLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#283349" },
+        horzLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#283349" },
       },
       handleScroll: !compact || { horzTouchDrag: true, vertTouchDrag: false },
     });
@@ -41,7 +41,7 @@ export function PriceChart({ pair, interval = "1h", type = "candles", height = 4
     const main =
       type === "candles"
         ? chart.addSeries(CandlestickSeries, { upColor: UP, downColor: DOWN, borderVisible: false, wickUpColor: UP, wickDownColor: DOWN })
-        : chart.addSeries(AreaSeries, { lineColor: "#3cf27a", topColor: "rgba(60,242,122,.28)", bottomColor: "rgba(60,242,122,0)", lineWidth: 2 });
+        : chart.addSeries(AreaSeries, { lineColor: "#F59E0B", topColor: "rgba(245,158,11,.28)", bottomColor: "rgba(245,158,11,0)", lineWidth: 2 });
     main.priceScale().applyOptions({ scaleMargins: { top: 0.08, bottom: 0.24 } });
 
     const vol = chart.addSeries(HistogramSeries, { priceFormat: { type: "volume" }, priceScaleId: "vol", lastValueVisible: false, priceLineVisible: false });
