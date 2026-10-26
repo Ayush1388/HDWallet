@@ -33,7 +33,7 @@ export function MarketList({ onOpen, limit }) {
         <ul className="space-y-2">
           {rows.map((t) => (
             <li key={t.pair}>
-              <button onClick={() => onOpen(t.symbol)} className="flex w-full items-center gap-3 rounded-[20px] border border-[rgba(226,236,255,.05)] bg-raised/60 px-3 py-3 text-left transition hover:border-[rgba(226,236,255,.14)]">
+              <button onClick={() => onOpen(t.symbol)} className="flex w-full items-center gap-3 rounded-[20px] border border-[rgba(255,253,248,.05)] bg-raised/60 px-3 py-3 text-left transition hover:border-[rgba(255,253,248,.14)]">
                 <CoinIcon symbol={t.symbol} />
                 <span className="min-w-0 flex-1">
                   <span className="block font-semibold">{t.symbol} <span className="font-normal text-muted">{t.name}</span></span>

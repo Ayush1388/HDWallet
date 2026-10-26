@@ -34,6 +34,7 @@ const paths = {
   globe: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z",
   trash: "M4 7h16M10 11v6M14 11v6M5 7l1 13h12l1-13M9 7V4h6v3",
   home: "M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10",
+  menu: "M4 7h16M4 12h16M4 17h16",
   bars: "M5 20V11M10 20V4M15 20v-8M20 20v-5",
   swap: "M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7",
   search: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4",
@@ -54,17 +55,17 @@ export function Icon({ name, className = "h-4 w-4", strokeWidth = 1.8, duo = fal
 
 export function Logo({ size = "h-9 w-9" }) {
   return (
-    <span className={`${size} grid shrink-0 place-items-center rounded-xl border border-[rgba(226,236,255,.1)] bg-gradient-to-b from-[#1B1F26] to-[#121418]`}>
-      <svg viewBox="0 0 24 24" className="h-3/5 w-3/5" fill="none" strokeWidth="2.4" strokeLinejoin="round" aria-hidden="true">
-        <path d={paths.hex} stroke="#B8E4FF" />
+    <span className={`${size} grid shrink-0 place-items-center rounded-[30%] bg-accent`}>
+      <svg viewBox="0 0 24 24" className="h-3/5 w-3/5" fill="none" strokeWidth="2.6" strokeLinejoin="round" aria-hidden="true">
+        <path d={paths.hex} stroke="#3C315B" />
       </svg>
     </span>
   );
 }
 
 const variants = {
-  primary: "bg-accent text-accent-ink hover:brightness-110",
-  secondary: "glass text-fg hover:border-[rgba(226,236,255,.16)]",
+  primary: "rounded-full bg-accent text-accent-ink hover:bg-accent-soft",
+  secondary: "glass text-fg hover:border-[rgba(255,253,248,.16)]",
   ghost: "text-muted hover:bg-white/5 hover:text-fg",
   danger: "border border-down/30 bg-down/10 text-down hover:bg-down/20",
 };
@@ -156,7 +157,7 @@ export function Notice({ tone = "warn", children }) {
   const tones = {
     warn: "border-amber-400/25 bg-amber-400/10 text-amber-100",
     danger: "border-down/30 bg-down/10 text-rose-100",
-    info: "border-[rgba(226,236,255,.08)] bg-raised text-fg/85",
+    info: "border-[rgba(255,253,248,.08)] bg-raised text-fg/85",
   };
   return (
     <div className={`flex gap-3 rounded-2xl border p-3 text-sm leading-relaxed ${tones[tone]}`}>

@@ -1,12 +1,12 @@
-// Renders the Aurum logo (obsidian rounded square + ice-blue hexagon outline) to PNG
+// Renders the Aurum logo (lavender rounded square + deep-purple hexagon outline) to PNG
 // at the sizes Chrome needs. Dependency-free: rasterises with supersampling and
 // encodes PNG with node:zlib. Run: node scripts/make-icons.mjs
 import { writeFileSync, mkdirSync } from "node:fs";
 import { deflateSync } from "node:zlib";
 
-const BG = [0x14, 0x17, 0x1c];
-// Ice gradient along the diagonal: frost white -> ice blue.
-const STOPS = [[0, [0xea, 0xf7, 0xff]], [0.5, [0x9c, 0xd6, 0xff]], [1, [0x5a, 0xb4, 0xf5]]];
+const BG = [0xab, 0x9f, 0xf2];
+// Solid deep-purple stroke (kept as a gradient table for easy re-theming).
+const STOPS = [[0, [0x3c, 0x31, 0x5b]], [1, [0x3c, 0x31, 0x5b]]];
 function ice(t) {
   for (let i = 0; i < STOPS.length - 1; i++) {
     const [a, ca] = STOPS[i];

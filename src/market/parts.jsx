@@ -26,7 +26,7 @@ export function Spark({ points, className = "h-10 w-28", stroke }) {
   const w = 100;
   const h = 32;
   const d = points.map((p, i) => `${i ? "L" : "M"}${((i / (points.length - 1)) * w).toFixed(2)},${(h - ((p - min) / (max - min || 1)) * (h - 4) - 2).toFixed(2)}`).join("");
-  const color = stroke ?? (points.at(-1) >= points[0] ? "#3DD68C" : "#F26D6D");
+  const color = stroke ?? (points.at(-1) >= points[0] ? "#3CCB8B" : "#F2665E");
   return (
     <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className={className} aria-hidden="true">
       <path d={d} fill="none" stroke={color} strokeWidth="1.6" vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
@@ -57,16 +57,16 @@ export function GlowLine({ points, className = "h-24 w-full" }) {
     <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className={`${className} overflow-visible`} aria-hidden="true">
       <defs>
         <linearGradient id={`${id}s`} x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0" stopColor="#3B9EEA" stopOpacity=".55" />
-          <stop offset=".6" stopColor="#7CC8FF" />
-          <stop offset="1" stopColor="#D6F0FF" />
+          <stop offset="0" stopColor="#8A7BE6" stopOpacity=".55" />
+          <stop offset=".6" stopColor="#AB9FF2" />
+          <stop offset="1" stopColor="#E2DFFE" />
         </linearGradient>
         <filter id={`${id}g`} x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="3" /></filter>
       </defs>
       <path d={d} fill="none" stroke={`url(#${id}s)`} strokeWidth="6" opacity=".25" filter={`url(#${id}g)`} vectorEffect="non-scaling-stroke" />
       <path d={d} fill="none" stroke={`url(#${id}s)`} strokeWidth="2.2" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-      <circle cx={ex} cy={ey} r="8" fill="#7CC8FF" opacity=".4" filter={`url(#${id}g)`} />
-      <circle cx={ex} cy={ey} r="3.2" fill="#EAF7FF" />
+      <circle cx={ex} cy={ey} r="8" fill="#AB9FF2" opacity=".4" filter={`url(#${id}g)`} />
+      <circle cx={ex} cy={ey} r="3.2" fill="#FFFDF8" />
     </svg>
   );
 }

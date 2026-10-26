@@ -1,18 +1,21 @@
-import { Suspense, lazy, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Icon, Logo, Spinner } from "../components/ui";
 import { match, navigate, useRoute } from "../lib/router";
-import { COIN_BY_SYMBOL, fmtPrice } from "../lib/market";
+import { COIN_BY_SYMBOL } from "../lib/market";
 import { MarketTable } from "../market/MarketList";
-import { sortTickers } from "../market/sort";
-import { useSparklines, useTickers } from "../market/hooks";
-import { CoinIcon, Pct, Spark } from "../market/parts";
 
 const CoinView = lazy(() => import("../market/CoinView").then((m) => ({ default: m.CoinView })));
 const WalletApp = lazy(() => import("../wallet/WalletApp"));
 
 export const EXTENSION_ZIP = "downloads/aurum-wallet-extension.zip";
+export const DEMO_URL = "./?demo#/wallet";
 
-const Loading = () => <div className="grid min-h-[50vh] place-items-center text-muted"><Spinner className="h-6 w-6" /></div>;
+// Layout follows the phantom.com taste analysis: colour-blocked sections, a dark hero card
+// inset from the viewport, weight-400 display type with tight tracking, purple ink, pill controls.
+const GUTTER = "px-4 sm:px-8 lg:px-12";
+const PILL = "inline-flex items-center justify-center gap-2 rounded-full transition duration-300 ease-phantom";
+
+const Loading = () => <div className="grid min-h-[50vh] place-items-center text-site-muted"><Spinner className="h-6 w-6" /></div>;
 
 function Header({ path }) {
   const [open, setOpen] = useState(false);
@@ -23,32 +26,37 @@ function Header({ path }) {
   ];
   const active = (p) => path === p || (p === "/markets" && path.startsWith("/coin/"));
   return (
-    <header className="sticky top-0 z-40 border-b border-white/[.06] bg-ink/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <a href="#/" className="flex items-center gap-2.5" aria-label="Aurum home">
-          <Logo size="h-8 w-8" />
-          <span className="text-lg font-semibold tracking-tight">Aurum</span>
+    <header className={`relative z-40 ${GUTTER} py-3`}>
+      <div className="flex h-[60px] items-center justify-between gap-4">
+        <a href="#/" className="flex items-center gap-2 text-site-ink" aria-label="Aurum home">
+          <Logo size="h-9 w-9" />
+          <span className="text-[26px] font-medium tracking-tightest">aurum</span>
         </a>
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+        <nav className="hidden h-[60px] items-center rounded-full bg-white px-2 shadow-[0_1px_2px_rgba(60,49,91,.06)] md:flex" aria-label="Primary">
           {links.map(([href, label]) => (
-            <a key={href} href={`#${href}`} aria-current={active(href) ? "page" : undefined} className={`rounded-full px-4 py-2 text-sm font-semibold transition ${active(href) ? "bg-raised text-fg" : "text-muted hover:text-fg"}`}>
+            <a
+              key={href}
+              href={`#${href}`}
+              aria-current={active(href) ? "page" : undefined}
+              className={`rounded-full px-6 py-3 text-[15px] transition ${active(href) ? "bg-site-lavsoft text-site-ink" : "text-site-ink hover:bg-site-soft"}`}
+            >
               {label}
             </a>
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <a href="#/download" className="hidden min-h-[40px] items-center gap-2 rounded-full bg-accent px-4 text-sm font-semibold text-accent-ink transition hover:brightness-110 sm:inline-flex">
-            <Icon name="down" className="h-4 w-4" strokeWidth={2.4} /> Add to Chrome
+          <a href="#/download" className={`${PILL} hidden h-[52px] bg-site-lav px-8 text-[15px] text-site-ink hover:bg-site-lavsoft sm:inline-flex`}>
+            Download
           </a>
-          <button className="icon-btn md:hidden" aria-label="Menu" aria-expanded={open} onClick={() => setOpen(!open)}>
-            <Icon name={open ? "x" : "bars"} className="h-5 w-5" />
+          <button className="grid h-12 w-12 place-items-center rounded-full bg-white text-site-ink md:hidden" aria-label="Menu" aria-expanded={open} onClick={() => setOpen(!open)}>
+            <Icon name={open ? "x" : "menu"} className="h-5 w-5" />
           </button>
         </div>
       </div>
       {open && (
-        <nav className="border-t border-white/[.06] px-4 py-2 md:hidden" aria-label="Mobile">
+        <nav className="mt-2 rounded-[24px] bg-white p-2 md:hidden" aria-label="Mobile">
           {links.map(([href, label]) => (
-            <a key={href} href={`#${href}`} onClick={() => setOpen(false)} className="block rounded-xl px-3 py-3 font-semibold text-fg/90 hover:bg-white/5">{label}</a>
+            <a key={href} href={`#${href}`} onClick={() => setOpen(false)} className="block rounded-full px-5 py-3 text-site-ink hover:bg-site-soft">{label}</a>
           ))}
         </nav>
       )}
@@ -56,230 +64,203 @@ function Header({ path }) {
   );
 }
 
-function Footer() {
+/** Dark card inset from the page, with Phantom-style crosshair rules and a single light streak. */
+function Hero() {
   return (
-    <footer className="mt-24 border-t border-white/[.06]">
-      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <div className="flex items-center gap-2.5"><Logo size="h-7 w-7" /> <span className="font-bold text-fg/90">Aurum</span> · Non-custodial wallet for Ethereum & Solana</div>
-        <p>Market data: Binance · Charts: TradingView Lightweight Charts™ · Not financial advice.</p>
+    <section className={`${GUTTER} pt-4`}>
+      <div className="relative isolate flex min-h-[min(720px,82vh)] flex-col items-center justify-center overflow-hidden rounded-[32px] bg-site-dark px-6 py-24 text-center text-site-cream">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute left-[34%] top-0 h-full border-l border-dashed border-white/10" />
+          <div className="absolute left-0 top-[39%] w-full border-t border-dashed border-white/10" />
+          <div className="absolute left-[34%] top-[39%] h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/15" />
+          <div className="absolute -left-[10%] bottom-[-30%] h-[3px] w-[70%] origin-left -rotate-[38deg] bg-gradient-to-r from-transparent via-site-lav to-transparent opacity-70 blur-[1px]" />
+          <div className="absolute -left-[10%] bottom-[-30%] h-24 w-[70%] origin-left -rotate-[38deg] bg-gradient-to-r from-transparent via-site-lav/25 to-transparent blur-2xl" />
+        </div>
+        <p className="text-lg text-site-cream/75 sm:text-[22px]">The wallet that lives in your browser</p>
+        <h1 className="mt-5 max-w-5xl text-[44px] font-normal leading-[1.08] tracking-display sm:text-[64px] lg:text-[80px]">
+          Your keys, every market, one extension
+        </h1>
+        <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row">
+          <a href="#/download" className={`${PILL} h-[72px] bg-site-lavsoft px-9 text-lg text-site-ink hover:bg-white`}>
+            <Icon name="down" className="h-5 w-5" /> Add to Chrome
+          </a>
+          <a href="#preview" onClick={(e) => { e.preventDefault(); document.getElementById("preview")?.scrollIntoView({ behavior: "smooth" }); }} className={`${PILL} h-[72px] px-7 text-lg text-site-cream/85 hover:text-site-cream`}>
+            Try it live <Icon name="send" className="h-4 w-4" />
+          </a>
+        </div>
+        <p className="mt-10 text-sm text-site-cream/50">Ethereum · Solana · Free · Your keys never leave your device</p>
       </div>
-    </footer>
+    </section>
   );
 }
 
-/** Live phone mock-up for the hero (mirrors the extension's home screen). */
-function PhonePreview() {
-  const { tickers } = useTickers(15_000);
-  const btc = tickers.find((t) => t.symbol === "BTC");
-  const trending = useMemo(() => sortTickers(tickers, "trending").slice(0, 3), [tickers]);
-  const sparks = useSparklines(["BTCUSDT"]);
+/** The real extension running in demo mode, on a lavender block like Phantom's device showcase. */
+function ExtensionPreview() {
+  const points = [
+    ["home", "Home", "Balance, 24h change and every token"],
+    ["bars", "Markets", "Live candles and order books"],
+    ["swap", "Transfer", "Any token, live network fees"],
+    ["stake", "Earn", "Stake SOL, claim rewards"],
+  ];
   return (
-    <div className="relative mx-auto w-[300px] rounded-[44px] border border-white/10 bg-ink p-3 shadow-[0_40px_120px_-40px_rgba(124,200,255,.35)]">
-      <div className="mx-auto mb-3 h-6 w-28 rounded-full bg-raised" />
-      <div className="relative overflow-hidden rounded-[26px] bg-accent p-4 text-accent-ink">
-        <div className="pointer-events-none absolute -right-10 -top-12 h-32 w-32 rounded-full bg-white/20 blur-2xl" />
-        <div className="relative flex items-center justify-between">
-          <span className="flex items-center gap-2 text-sm font-semibold"><CoinIcon symbol="BTC" size="h-8 w-8" /> BTC</span>
-          <span className="rounded-full bg-accent-ink/10 px-2.5 py-1 text-[10px] font-semibold">Top crypto</span>
-        </div>
-        <p className="relative mt-4 text-[11px] font-medium text-accent-ink/70">Bitcoin · 24h</p>
-        <div className="relative flex items-end justify-between gap-2">
-          <p className="text-3xl font-semibold tracking-tightest tabular">{btc ? `${btc.change >= 0 ? "+" : ""}${btc.change.toFixed(2)}%` : "—"}</p>
-          <Spark points={sparks.BTCUSDT} stroke="#06121C" className="h-10 w-24" />
-        </div>
-        <p className="relative mt-1 text-xs font-semibold tabular">${fmtPrice(btc?.price)}</p>
+    <section id="preview" className={`${GUTTER} scroll-mt-24 pt-28`}>
+      <div className="mx-auto max-w-4xl text-center text-site-ink">
+        <h2 className="text-[40px] font-normal leading-[1.1] tracking-display sm:text-[64px]">This is the extension.<br />Go ahead, tap around.</h2>
+        <p className="mx-auto mt-5 max-w-xl text-lg text-site-muted">The window below is the real popup running with sample balances. Markets and charts are live.</p>
       </div>
-      <div className="mt-3 grid grid-cols-3 gap-2">
-        {[["up", "Send"], ["down", "Receive"], ["stake", "Earn"]].map(([i, l]) => (
-          <div key={l} className="flex flex-col items-center gap-1.5 rounded-2xl border border-[rgba(226,236,255,.08)] bg-panel py-3 text-[11px] font-semibold">
-            <span className="grid h-8 w-8 place-items-center rounded-full border border-[rgba(226,236,255,.12)]"><Icon name={i} className="h-4 w-4" /></span>{l}
+      <div className="mt-12 rounded-[32px] bg-site-lav px-4 pb-0 pt-12 sm:px-10">
+        <div className="mx-auto w-[392px] max-w-full overflow-hidden rounded-t-[24px] border border-b-0 border-black/10 bg-[#2a2a2a] shadow-[0_-20px_60px_-20px_rgba(60,49,91,.45)]">
+          <div className="flex items-center gap-2 px-3 py-2.5">
+            <span className="flex gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-white/20" /><i className="h-2.5 w-2.5 rounded-full bg-white/20" /><i className="h-2.5 w-2.5 rounded-full bg-white/20" /></span>
+            <span className="ml-auto flex items-center gap-1.5 rounded-full bg-white/[.08] px-2.5 py-1 text-[11px] text-site-cream/80"><Logo size="h-4 w-4" /> Aurum Wallet</span>
           </div>
-        ))}
-      </div>
-      <div className="mt-3 rounded-2xl border border-[rgba(226,236,255,.08)] bg-panel p-2.5">
-        <div className="mb-2 flex gap-1.5 text-[10px] font-semibold">
-          <span className="rounded-full border border-accent/60 bg-accent/10 px-2 py-1 text-accent">Trending</span>
-          <span className="rounded-full border border-white/10 px-2 py-1 text-muted">Gainers</span>
-          <span className="rounded-full border border-white/10 px-2 py-1 text-muted">Volume</span>
+          <iframe title="Aurum extension live demo" src={DEMO_URL} loading="lazy" className="block h-[600px] w-full bg-ink" />
         </div>
-        {(trending.length ? trending : [null, null, null]).map((t, i) => (
-          <div key={t?.pair ?? i} className="mb-1.5 flex items-center gap-2 rounded-xl bg-white/[.03] px-2 py-2 last:mb-0">
-            {t ? <CoinIcon symbol={t.symbol} size="h-7 w-7" /> : <span className="skeleton h-7 w-7 rounded-full" />}
-            <span className="flex-1 text-xs font-bold">{t?.symbol ?? "—"}<br /><Pct value={t?.change} className="text-[10px]" /></span>
-            <span className="text-right text-xs font-bold tabular">{fmtPrice(t?.price)}</span>
-          </div>
-        ))}
       </div>
-    </div>
+      <ul className="mx-auto mt-6 grid max-w-5xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {points.map(([icon, title, text]) => (
+          <li key={title} className="rounded-[24px] bg-site-soft p-5 text-site-ink">
+            <span className="grid h-10 w-10 place-items-center rounded-full bg-site-lavsoft"><Icon name={icon} className="h-[18px] w-[18px]" /></span>
+            <p className="mt-4 text-lg">{title}</p>
+            <p className="text-sm text-site-muted">{text}</p>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-6 text-center">
+        <a href={DEMO_URL} target="_blank" rel="noreferrer" className={`${PILL} h-[52px] bg-site-lavsoft px-7 text-site-ink hover:bg-site-lav`}>
+          Open the demo full screen <Icon name="external" className="h-4 w-4" />
+        </a>
+      </div>
+    </section>
+  );
+}
+
+function MarketsTeaser() {
+  return (
+    <section className={`${GUTTER} pt-28`}>
+      <div className="mb-8 flex flex-col items-start justify-between gap-4 text-site-ink sm:flex-row sm:items-end">
+        <h2 className="text-[40px] font-normal leading-[1.1] tracking-display sm:text-[64px]">Every market,<br />live.</h2>
+        <a href="#/markets" className={`${PILL} h-[52px] bg-site-lavsoft px-7 text-site-ink hover:bg-site-lav`}>
+          All markets <Icon name="send" className="h-4 w-4" />
+        </a>
+      </div>
+      <MarketTable limit={8} onOpen={(s) => navigate(`/coin/${s}`)} />
+    </section>
   );
 }
 
 const FEATURES = [
   ["shield", "Non-custodial", "Your recovery phrase is encrypted with AES-256 on your device. We never see your keys."],
-  ["bars", "Live markets", "Binance-grade candlestick charts, order books and trades for every listed coin."],
+  ["bars", "Pro charts", "Candlesticks, order books and live trades for every listed coin."],
   ["key", "One phrase, two chains", "Unlimited Ethereum and Solana accounts from a single recovery phrase."],
-  ["swap", "Send any token", "ETH, SOL, ERC-20 and SPL tokens with live fee estimates and speed control."],
-  ["stake", "Earn with staking", "Delegate SOL to top validators, then unstake and claim from one screen."],
-  ["lock", "Auto-lock", "The extension locks itself after inactivity and forgets the session when the browser closes."],
+  ["swap", "Send anything", "ETH, SOL, ERC-20 and SPL tokens with live fee estimates."],
+  ["stake", "Earn", "Delegate SOL to top validators, unstake and claim in one place."],
+  ["lock", "Auto-lock", "Locks itself after inactivity and forgets the session when the browser closes."],
 ];
 
-function Landing() {
+/** Full-bleed deep-purple chapter with the logo set inline in the headline. */
+function Security() {
   return (
-    <>
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-accent/[.08] blur-[140px]" />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[.03] px-3 py-1.5 text-xs font-semibold text-muted">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent" /> Ethereum · Solana · Browser extension
-            </span>
-            <h1 className="mt-6 text-5xl font-semibold leading-[1.02] tracking-tightest sm:text-[68px]">
-              The crypto wallet<br />that lives in your <span className="text-ice">browser.</span>
-            </h1>
-            <p className="mt-5 max-w-lg text-lg text-muted">Hold, send and stake across Ethereum and Solana, and track every market with live pro-grade charts. Your keys never leave your device.</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a href="#/download" className="inline-flex min-h-[52px] items-center gap-2 rounded-2xl bg-accent px-6 font-semibold text-accent-ink shadow-glow transition hover:brightness-110">
-                <Icon name="down" className="h-5 w-5" strokeWidth={2.4} /> Download extension
-              </a>
-              <a href="#preview" onClick={(e) => { e.preventDefault(); document.getElementById("preview")?.scrollIntoView({ behavior: "smooth" }); }} className="inline-flex min-h-[52px] items-center gap-2 rounded-2xl border border-[rgba(226,236,255,.08)] bg-panel px-6 font-bold transition hover:border-[rgba(226,236,255,.2)]">
-                Try the live demo <Icon name="send" className="h-4 w-4" />
-              </a>
-            </div>
-            <dl className="mt-10 grid max-w-md grid-cols-3 gap-6">
-              {[["35+", "Live markets"], ["2", "Chains"], ["0", "Data collected"]].map(([v, l]) => (
-                <div key={l}><dt className="text-xs text-muted">{l}</dt><dd className="text-2xl font-semibold">{v}</dd></div>
-              ))}
-            </dl>
-          </div>
-          <PhonePreview />
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="mb-5 flex items-end justify-between">
-          <div>
-            <h2 className="text-3xl font-semibold tracking-tight">Markets today</h2>
-            <p className="mt-1 text-muted">Live prices from Binance. Click any coin for the full chart.</p>
-          </div>
-          <a href="#/markets" className="hidden items-center gap-1.5 text-sm font-bold text-accent hover:underline sm:inline-flex">View all markets <Icon name="send" className="h-4 w-4" /></a>
-        </div>
-        <MarketTable limit={10} onOpen={(s) => navigate(`/coin/${s}`)} />
-      </section>
-
-      <section className="mx-auto mt-24 max-w-7xl px-4 sm:px-6">
-        <h2 className="text-3xl font-semibold tracking-tight">Everything a pro wallet needs</h2>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <section className="mt-28 bg-site-ink py-28 text-site-cream">
+      <div className={`${GUTTER} mx-auto max-w-7xl`}>
+        <h2 className="mx-auto max-w-5xl text-center text-[40px] font-normal leading-[1.15] tracking-display sm:text-[64px] lg:text-[80px]">
+          Controlled by you, <span className="inline-block translate-y-1 align-middle"><Logo size="h-12 w-12 sm:h-20 sm:w-20" /></span> secured by math
+        </h2>
+        <div className="mt-20 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map(([icon, title, text]) => (
-            <div key={title} className="card p-6">
-              <span className="grid h-11 w-11 place-items-center rounded-2xl border border-[rgba(226,236,255,.08)] bg-raised"><Icon name={icon} className="h-5 w-5" strokeWidth={1.9} duo /></span>
-              <h3 className="mt-4 text-lg font-bold">{title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
+            <div key={title}>
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-site-lav text-site-ink"><Icon name={icon} className="h-5 w-5" /></span>
+              <h3 className="mt-5 text-2xl font-normal tracking-tight">{title}</h3>
+              <p className="mt-2 leading-relaxed text-site-cream/65">{text}</p>
             </div>
           ))}
         </div>
-      </section>
-
-      <ExtensionPreview />
-      <DownloadSection />
-    </>
-  );
-}
-
-export const DEMO_URL = "./?demo#/wallet";
-
-/** The real extension UI running live in demo mode (no password, sample data), at popup size. */
-function ExtensionPreview() {
-  const points = [
-    ["home", "Home", "Balance, 24h change, portfolio chart and your tokens."],
-    ["bars", "Markets", "Tap any coin for live candles and the order book."],
-    ["swap", "Transfer", "Send any token with a live network-fee estimate."],
-    ["stake", "Earn", "Stake SOL with top validators and claim rewards."],
-  ];
-  return (
-    <section id="preview" className="mx-auto mt-24 max-w-7xl scroll-mt-24 px-4 sm:px-6">
-      <div className="grid items-center gap-12 lg:grid-cols-[1fr_auto]">
-        <div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-[rgba(226,236,255,.08)] bg-panel px-3 py-1.5 text-xs font-medium text-fg/85">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-up" /> Live demo · no install, no password
-          </span>
-          <h2 className="mt-5 text-4xl font-semibold tracking-tight">This is the extension.<br />Go ahead, tap around.</h2>
-          <p className="mt-3 max-w-lg text-muted">
-            The window on the right is the actual Aurum popup running in demo mode with sample balances. Markets and charts are live; sending and staking are disabled.
-          </p>
-          <ul className="mt-7 grid gap-3 sm:grid-cols-2">
-            {points.map(([icon, title, text]) => (
-              <li key={title} className="flex gap-3 rounded-2xl border border-white/[.06] bg-panel p-4">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[rgba(226,236,255,.08)] bg-raised"><Icon name={icon} className="h-4 w-4" strokeWidth={2} duo /></span>
-                <div><p className="text-sm font-bold">{title}</p><p className="text-xs leading-relaxed text-muted">{text}</p></div>
-              </li>
-            ))}
-          </ul>
-          <a href={DEMO_URL} target="_blank" rel="noreferrer" className="mt-7 inline-flex min-h-[48px] items-center gap-2 rounded-2xl border border-white/10 bg-white/[.03] px-5 font-bold transition hover:border-accent/40">
-            Open demo full screen <Icon name="external" className="h-4 w-4" />
-          </a>
-        </div>
-        <div className="mx-auto">
-          {/* Browser-toolbar chrome so it reads as an extension popup. */}
-          <div className="w-[392px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-white/10 bg-panel shadow-[0_40px_120px_-40px_rgba(124,200,255,.35)]">
-            <div className="flex items-center gap-2 border-b border-white/[.06] px-3 py-2">
-              <span className="flex gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-white/15" /><i className="h-2.5 w-2.5 rounded-full bg-white/15" /><i className="h-2.5 w-2.5 rounded-full bg-white/15" /></span>
-              <span className="ml-auto flex items-center gap-1.5 rounded-md bg-white/[.06] px-2 py-1 text-[11px] font-semibold text-fg/75"><Logo size="h-4 w-4" /> Aurum Wallet</span>
-            </div>
-            <iframe title="Aurum extension live demo" src={DEMO_URL} loading="lazy" className="block h-[600px] w-full bg-ink" />
-          </div>
-        </div>
       </div>
     </section>
   );
 }
 
-function DownloadSection() {
+/** Lavender chapter: the download CTA + install steps, flowing into the footer card. */
+function GetStarted() {
   const steps = [
-    ["Download", "Get the extension package below and unzip it."],
-    ["Open extensions", <>Go to <code className="rounded bg-white/10 px-1.5 py-0.5 text-xs">chrome://extensions</code> (or <code className="rounded bg-white/10 px-1.5 py-0.5 text-xs">edge://extensions</code>, <code className="rounded bg-white/10 px-1.5 py-0.5 text-xs">brave://extensions</code>).</>],
-    ["Developer mode", "Switch on “Developer mode” in the top-right corner."],
-    ["Load unpacked", "Click “Load unpacked”, pick the unzipped folder, then pin Aurum to your toolbar."],
+    ["Download", "Get the package and unzip it."],
+    ["Open extensions", "Go to chrome://extensions (or edge:// / brave://)."],
+    ["Developer mode", "Switch it on in the top-right corner."],
+    ["Load unpacked", "Pick the unzipped folder, then pin Aurum."],
   ];
   return (
-    <section id="download" className="mx-auto mt-24 max-w-7xl scroll-mt-24 px-4 sm:px-6">
-      <div className="card relative overflow-hidden rounded-[32px] p-8 sm:p-12">
-        <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-accent/[.10] blur-[90px]" />
-        <div className="relative grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
-          <div>
-            <h2 className="text-4xl font-semibold tracking-tight">Install Aurum</h2>
-            <p className="mt-3 max-w-md text-muted">Works in Chrome, Edge, Brave, Arc and other Chromium browsers. Free and open source.</p>
-            <a href={EXTENSION_ZIP} download className="mt-7 inline-flex min-h-[56px] items-center gap-2.5 rounded-2xl bg-accent px-7 text-lg font-semibold text-accent-ink shadow-glow transition hover:brightness-110">
-              <Icon name="down" className="h-5 w-5" strokeWidth={2.4} /> Download for Chrome
-            </a>
-            <p className="mt-3 text-xs text-muted">Version 1.0.0 · Manifest V3 · 650 KB</p>
-          </div>
-          <ol className="space-y-3">
-            {steps.map(([title, text], i) => (
-              <li key={title} className="flex gap-4 rounded-2xl border border-[rgba(226,236,255,.08)] bg-ink/60 p-4">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[rgba(226,236,255,.08)] bg-raised text-sm font-medium text-fg">{i + 1}</span>
-                <div><p className="font-bold">{title}</p><p className="mt-0.5 text-sm text-muted">{text}</p></div>
-              </li>
-            ))}
-          </ol>
-        </div>
+    <section id="download" className="scroll-mt-24 bg-site-lav pb-12 pt-28 text-site-ink">
+      <div className={`${GUTTER} text-center`}>
+        <p className="text-lg text-site-ink/70 sm:text-xl">Free and open source. Works in Chrome, Edge, Brave and Arc.</p>
+        <h2 className="mt-4 text-[48px] font-normal leading-[1.08] tracking-display sm:text-[80px] lg:text-[96px]">
+          Get started.<br />
+          Download <span className="inline-block translate-y-1 align-middle"><span className="inline-grid h-14 w-14 place-items-center rounded-[30%] bg-site-cream sm:h-24 sm:w-24"><svg viewBox="0 0 24 24" className="h-3/5 w-3/5" fill="none" stroke="#3C315B" strokeWidth="2.6" strokeLinejoin="round" aria-hidden="true"><path d="M12 3l7.5 4.25v9.5L12 21l-7.5-4.25v-9.5z" /></svg></span></span> Aurum.
+        </h2>
+        <a href={EXTENSION_ZIP} download className={`${PILL} mt-12 h-[80px] bg-white px-10 text-lg text-site-ink hover:bg-site-cream`}>
+          <Icon name="down" className="h-5 w-5" /> Download for Chrome
+        </a>
+        <p className="mt-4 text-sm text-site-ink/60">Version 1.0.0 · Manifest V3 · 650 KB</p>
+        <ol className="mx-auto mt-16 grid max-w-6xl gap-3 text-left sm:grid-cols-2 lg:grid-cols-4">
+          {steps.map(([title, text], i) => (
+            <li key={title} className="rounded-[24px] bg-white/55 p-6">
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-site-ink text-sm text-site-cream">{i + 1}</span>
+              <p className="mt-4 text-lg">{title}</p>
+              <p className="text-sm text-site-ink/65">{text}</p>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
+  );
+}
+
+function Footer() {
+  const cols = [
+    ["Product", [["Download", "#/download"], ["Web wallet", "#/wallet"], ["Live demo", DEMO_URL]]],
+    ["Markets", [["All markets", "#/markets"], ["Bitcoin", "#/coin/BTC"], ["Ethereum", "#/coin/ETH"], ["Solana", "#/coin/SOL"]]],
+    ["Data", [["Binance market data", "https://www.binance.com"], ["TradingView charts", "https://www.tradingview.com/lightweight-charts/"]]],
+  ];
+  return (
+    <footer className={`bg-site-lav ${GUTTER} pb-6`}>
+      <div className="rounded-[32px] bg-site-bg p-8 text-site-ink sm:p-12">
+        <div className="grid gap-12 lg:grid-cols-[1fr_2fr]">
+          <div>
+            <Logo size="h-14 w-14" />
+            <p className="mt-6 max-w-xs text-site-muted">A non-custodial wallet for Ethereum and Solana. Not financial advice.</p>
+          </div>
+          <div className="grid gap-8 sm:grid-cols-3">
+            {cols.map(([title, links]) => (
+              <div key={title}>
+                <p className="text-site-muted">{title}</p>
+                <ul className="mt-3 space-y-2">
+                  {links.map(([label, href]) => (
+                    <li key={label}><a href={href} {...(href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})} className="hover:underline">{label}</a></li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+        <span className="mt-12 inline-flex items-center gap-2 rounded-full bg-site-soft px-4 py-2 text-sm"><span className="h-2 w-2 rounded-full bg-up" /> Markets live</span>
+      </div>
+      <p className="mt-4 text-sm text-site-ink/70">© Aurum 2026</p>
+    </footer>
   );
 }
 
 function MarketsPage() {
   const [q, setQ] = useState("");
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div className={`${GUTTER} pb-24 pt-10`}>
+      <div className="mb-8 flex flex-col gap-6 text-site-ink sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-4xl font-semibold tracking-tight">Markets</h1>
-          <p className="mt-1 text-muted">Live USDT spot prices. Select a coin for candlestick charts, order book and trades.</p>
+          <h1 className="text-[48px] font-normal leading-none tracking-display sm:text-[72px]">Markets</h1>
+          <p className="mt-3 text-lg text-site-muted">Live USDT spot prices. Pick a coin for candles, order book and trades.</p>
         </div>
-        <label className="relative w-full sm:w-72">
+        <label className="relative w-full sm:w-80">
           <span className="sr-only">Search coins</span>
-          <Icon name="search" className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-          <input className="input pl-11" placeholder="Search coin" value={q} onChange={(e) => setQ(e.target.value)} />
+          <Icon name="search" className="pointer-events-none absolute left-5 top-1/2 h-4 w-4 -translate-y-1/2 text-site-muted" />
+          <input className="h-[52px] w-full rounded-full border border-site-ink/10 bg-white pl-12 pr-5 text-site-ink placeholder:text-site-muted focus:border-site-lav focus:outline-none focus:ring-4 focus:ring-site-lavsoft" placeholder="Search coin" value={q} onChange={(e) => setQ(e.target.value)} />
         </label>
       </div>
       <MarketTable search={q} onOpen={(s) => navigate(`/coin/${s}`)} />
@@ -296,11 +277,11 @@ function CoinPage({ symbol }) {
     };
   }, [sym]);
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <a href="#/markets" className="mb-4 inline-flex min-h-[36px] items-center gap-1.5 text-sm font-semibold text-muted hover:text-fg">
+    <div className={`${GUTTER} pb-24 pt-6`}>
+      <a href="#/markets" className={`${PILL} mb-5 h-11 bg-white px-5 text-sm text-site-ink hover:bg-site-lavsoft`}>
         <Icon name="back" className="h-4 w-4" /> All markets
       </a>
-      {!COIN_BY_SYMBOL[sym] && <p className="mb-4 text-sm text-muted">{sym} isn't in our curated list — showing raw Binance data.</p>}
+      {!COIN_BY_SYMBOL[sym] && <p className="mb-4 text-sm text-site-muted">{sym} isn't in our curated list — showing raw Binance data.</p>}
       <Suspense fallback={<Loading />}>
         <CoinView key={sym} symbol={sym} variant="full" />
       </Suspense>
@@ -310,14 +291,22 @@ function CoinPage({ symbol }) {
 
 export default function Site() {
   const path = useRoute();
+  const isWallet = path === "/wallet";
 
-  // The web wallet is a full-screen app, without the marketing chrome.
-  if (path === "/wallet") {
+  // The marketing site is light; the wallet keeps the app's dark surface.
+  useEffect(() => {
+    const b = document.body.style;
+    b.backgroundColor = isWallet ? "" : "#FDFCFE";
+    b.backgroundImage = isWallet ? "" : "none";
+    b.color = isWallet ? "" : "#3C315B";
+  }, [isWallet]);
+
+  if (isWallet) {
     return (
       <Suspense fallback={<Loading />}>
         <>
           <WalletApp />
-          <a href="#/" className="fixed left-6 top-6 z-40 hidden items-center gap-1.5 rounded-full border border-[rgba(226,236,255,.08)] bg-panel px-4 py-2 text-sm font-semibold text-muted transition hover:text-fg lg:inline-flex">
+          <a href="#/" className="fixed left-6 top-6 z-40 hidden items-center gap-1.5 rounded-full border border-[rgba(255,253,248,.08)] bg-panel px-4 py-2 text-sm text-muted transition hover:text-fg lg:inline-flex">
             <Icon name="back" className="h-4 w-4" /> Back to site
           </a>
         </>
@@ -329,11 +318,11 @@ export default function Site() {
   let page;
   if (coin) page = <CoinPage symbol={coin.symbol} />;
   else if (path === "/markets") page = <MarketsPage />;
-  else if (path === "/download") page = <div className="pb-4"><DownloadSection /><ExtensionPreview /></div>;
-  else page = <Landing />;
+  else if (path === "/download") page = <><GetStarted /><ExtensionPreview /><div className="pb-24" /></>;
+  else page = <><Hero /><ExtensionPreview /><MarketsTeaser /><Security /><GetStarted /></>;
 
   return (
-    <div className="flex min-h-[100dvh] flex-col">
+    <div className="flex min-h-[100dvh] flex-col bg-site-bg text-site-ink">
       <Header path={path} />
       <main className="flex-1">{page}</main>
       <Footer />

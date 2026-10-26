@@ -64,7 +64,7 @@ function HeroCard({ account, network, totals, loading, hidden, spark, onToggleHi
   const up = totals.delta >= 0;
   return (
     <section className="relative overflow-hidden rounded-[28px] bg-accent p-5 text-accent-ink" aria-label="Portfolio balance">
-      <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-white/20 blur-2xl" />
+      <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-white/25 blur-2xl" />
       <div className="relative flex items-center justify-between gap-2">
         <button onClick={onAccounts} className="flex min-h-[40px] min-w-0 items-center gap-2.5 text-left" aria-label={`Account ${account.name}. Switch account`}>
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent-ink text-sm font-semibold text-accent">{account.name.slice(0, 1).toUpperCase()}</span>
@@ -96,7 +96,7 @@ function HeroCard({ account, network, totals, loading, hidden, spark, onToggleHi
             </p>
           )}
         </div>
-        {spark && !hidden && <Spark points={spark} stroke="#06121C" className="mb-2 h-11 w-24 shrink-0" />}
+        {spark && !hidden && <Spark points={spark} stroke="#3C315B" className="mb-2 h-11 w-24 shrink-0" />}
       </div>
       <div className="relative mt-3 flex items-center gap-2 text-xs font-semibold">
         <span className="rounded-full bg-accent-ink px-2.5 py-1 text-accent tabular">
@@ -119,7 +119,7 @@ function Tiles({ claimCount, onAction }) {
     <nav aria-label="Wallet actions" className="grid grid-cols-3 gap-3">
       {tiles.map((t) => (
         <button key={t.id} onClick={() => onAction(t.id)} className="glass relative flex min-h-[96px] flex-col items-center justify-center gap-2 rounded-3xl text-sm font-medium transition hover:border-accent/30 active:scale-[.97]">
-          <span className="grid h-11 w-11 place-items-center rounded-full border border-[rgba(226,236,255,.12)] bg-white/[.04]">
+          <span className="grid h-11 w-11 place-items-center rounded-full border border-[rgba(255,253,248,.12)] bg-white/[.04]">
             <Icon name={t.icon} className="h-5 w-5" />
           </span>
           {t.label}
@@ -145,7 +145,7 @@ function Chips({ options, value, onChange, label }) {
 function HoldingRow({ row, network, hidden, onOpen }) {
   return (
     <li>
-      <button onClick={onOpen} className="flex w-full items-center gap-3 rounded-2xl border border-[rgba(226,236,255,.05)] bg-white/[.03] px-3 py-2.5 text-left transition hover:border-[rgba(226,236,255,.14)]">
+      <button onClick={onOpen} className="flex w-full items-center gap-3 rounded-2xl border border-[rgba(255,253,248,.05)] bg-white/[.03] px-3 py-2.5 text-left transition hover:border-[rgba(255,253,248,.14)]">
         <TokenIcon asset={row} size="h-10 w-10" />
         <span className="min-w-0 flex-1">
           <span className="block truncate font-semibold">{row.symbol} <span className="text-xs font-normal text-muted">{network[row.chain].name}</span></span>
@@ -173,7 +173,7 @@ function ActivityRow({ item, network, hidden }) {
   const pending = item.status === "pending";
   return (
     <li>
-      <a href={txUrl(item.chain, item.hash, network)} target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-2xl border border-[rgba(226,236,255,.05)] bg-white/[.03] px-3 py-2.5 transition hover:border-[rgba(226,236,255,.14)]">
+      <a href={txUrl(item.chain, item.hash, network)} target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-2xl border border-[rgba(255,253,248,.05)] bg-white/[.03] px-3 py-2.5 transition hover:border-[rgba(255,253,248,.14)]">
         <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-full ${failed ? "bg-down/10 text-down" : a.cls}`}>
           <Icon name={failed ? "fail" : pending ? "clock" : a.icon} className="h-[18px] w-[18px]" />
         </span>
@@ -251,7 +251,7 @@ function BottomNav({ page, onNav }) {
   // Fixed (not sticky) so it is always on screen regardless of page length or scroll container.
   return (
     <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-30">
-      <div className="mx-auto max-w-[440px] border-t border-[rgba(226,236,255,.07)] bg-ink/95 px-2 pb-[max(.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl">
+      <div className="mx-auto max-w-[440px] border-t border-[rgba(255,253,248,.07)] bg-ink/95 px-2 pb-[max(.5rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl">
         <ul className="grid grid-cols-5 items-end">
           {NAV.map((n) => (
             <li key={n.id} className="flex justify-center">
@@ -449,7 +449,7 @@ export default function Dashboard({
                   coinHolding && (
                     <div className="grid grid-cols-2 gap-3">
                       <button onClick={() => setModal({ type: "send", assetId: coinHolding.id })} className="min-h-[46px] rounded-2xl bg-accent text-sm font-semibold text-accent-ink transition hover:brightness-110">Send {coinHolding.symbol}</button>
-                      <button onClick={() => setModal({ type: "receive", chain: coinHolding.chain })} className="glass min-h-[46px] rounded-2xl text-sm font-bold transition hover:border-[rgba(226,236,255,.16)]">Receive</button>
+                      <button onClick={() => setModal({ type: "receive", chain: coinHolding.chain })} className="glass min-h-[46px] rounded-2xl text-sm font-bold transition hover:border-[rgba(255,253,248,.16)]">Receive</button>
                     </div>
                   )
                 }

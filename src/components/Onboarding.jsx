@@ -24,7 +24,7 @@ export function Welcome({ onCreate, onImport }) {
         <Logo size="h-14 w-14" />
         <h1 className="mt-6 text-4xl font-semibold tracking-tight sm:text-5xl">
           Your keys.{" "}
-          <span className="text-ice">Your assets.</span>
+          <span className="text-accent">Your assets.</span>
         </h1>
         <p className="mt-4 max-w-md text-balance text-muted">
           A hierarchical deterministic wallet for Ethereum and Solana. Create unlimited accounts from a single recovery phrase.
@@ -37,7 +37,7 @@ export function Welcome({ onCreate, onImport }) {
       <div className="grid gap-3 sm:grid-cols-3">
         {features.map((f) => (
           <div key={f.title} className="card rounded-3xl p-4">
-            <span className="mb-3 grid h-9 w-9 place-items-center rounded-xl border border-[rgba(226,236,255,.08)] bg-raised">
+            <span className="mb-3 grid h-9 w-9 place-items-center rounded-xl border border-[rgba(255,253,248,.08)] bg-raised">
               <Icon name={f.icon} strokeWidth={2} duo />
             </span>
             <h3 className="text-sm font-semibold">{f.title}</h3>

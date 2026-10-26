@@ -20,20 +20,20 @@ export function PriceChart({ pair, interval = "1h", type = "candles", height = 4
       autoSize: true,
       layout: {
         background: { type: ColorType.Solid, color: "transparent" },
-        textColor: "#8A919C",
+        textColor: "#8E8C94",
         fontFamily: "Geist Mono, ui-monospace, monospace",
         fontSize: compact ? 10 : 11,
       },
       grid: {
-        vertLines: { color: "rgba(226,236,255,.04)" },
-        horzLines: { color: "rgba(226,236,255,.04)" },
+        vertLines: { color: "rgba(255,253,248,.04)" },
+        horzLines: { color: "rgba(255,253,248,.04)" },
       },
-      rightPriceScale: { borderColor: "rgba(226,236,255,.08)" },
-      timeScale: { borderColor: "rgba(226,236,255,.08)", timeVisible: interval !== "1d" && interval !== "1w", secondsVisible: false, rightOffset: 4 },
+      rightPriceScale: { borderColor: "rgba(255,253,248,.08)" },
+      timeScale: { borderColor: "rgba(255,253,248,.08)", timeVisible: interval !== "1d" && interval !== "1w", secondsVisible: false, rightOffset: 4 },
       crosshair: {
         mode: CrosshairMode.Normal,
-        vertLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#23272E" },
-        horzLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#23272E" },
+        vertLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#383838" },
+        horzLine: { color: "rgba(255,255,255,.25)", labelBackgroundColor: "#383838" },
       },
       handleScroll: !compact || { horzTouchDrag: true, vertTouchDrag: false },
     });
@@ -41,7 +41,7 @@ export function PriceChart({ pair, interval = "1h", type = "candles", height = 4
     const main =
       type === "candles"
         ? chart.addSeries(CandlestickSeries, { upColor: UP, downColor: DOWN, borderVisible: false, wickUpColor: UP, wickDownColor: DOWN })
-        : chart.addSeries(AreaSeries, { lineColor: "#7CC8FF", topColor: "rgba(124,200,255,.22)", bottomColor: "rgba(124,200,255,0)", lineWidth: 2 });
+        : chart.addSeries(AreaSeries, { lineColor: "#AB9FF2", topColor: "rgba(171,159,242,.24)", bottomColor: "rgba(171,159,242,0)", lineWidth: 2 });
     main.priceScale().applyOptions({ scaleMargins: { top: 0.08, bottom: 0.24 } });
 
     const vol = chart.addSeries(HistogramSeries, { priceFormat: { type: "volume" }, priceScaleId: "vol", lastValueVisible: false, priceLineVisible: false });
